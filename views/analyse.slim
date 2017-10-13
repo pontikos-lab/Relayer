@@ -1,0 +1,22 @@
+#analysis_container.container
+  .section
+    h1.header.cyan-text.text-darken-4 OCT Segmentation
+    .card.analyse_card
+      .card-content.
+        span.card-title File Upload
+        p.lead Drop your HDF5 files (or a series of images here).
+        form#analysis_form
+        .file_space#fine-uploader-validation
+
+        p.lead
+        | Once the files have completed to upload, click on the analyse button in order to run the OCT segmentation.
+        a#analysis_btn.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3
+          i.material-icons.right cloud
+          | Analyse
+        .clearfix
+        p.grey-text style="margin-top:20px"
+          | By using this service, you accept our&nbsp;
+          a href="#" privacy policy
+          | &nbsp;and our&nbsp;
+          a href="#" terms and conditions
+          | . Essentially, any files uploaded here should only be used for research purposes and the results shown here should not be interpreted in clinical setting unless one is qualified to do so.

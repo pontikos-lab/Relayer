@@ -1,0 +1,126 @@
+doctype html
+html lang="en"
+  head
+    meta content=("text/html; charset=UTF-8") http-equiv="Content-Type"
+    meta content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" name="viewport"
+    title OCT Segmentation
+    link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
+    link type="text/css" rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
+    - if settings.production?
+      link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app-' + OctSegmentation::VERSION + '.min.css')}"
+    - else
+      link type="text/css" rel="stylesheet"  href="#{uri('assets/css/fine-uploader/fine-uploader-new.min.css')}"
+      link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app.css')}"
+
+  body.app
+    nav.cyan.darken-4
+      .nav-wrapper
+        span.hide-on-med-and-down.logo
+          a#logo-container.brand-logo.white-text href="#{request.base_url}"
+            | &nbsp;Oct Segmentation
+        a#logo-container.brand-logo.white-text.hide-on-large-only href="#{request.base_url}"
+          | &nbsp;Oct Segmentation
+        ul.hide-on-med-and-down.navbar_centered
+          li class=('active' if uri =~ %r{/analyse} )
+            a.white-text href="#{request.base_url}/analyse"  Analyse
+          li class=('active' if uri =~ %r{/my_results} )
+            - if session[:user].nil?
+              a.white-text href="#login_modal"  My Results
+            - else
+              a.white-text href="#{request.base_url}/my_results"  My Results
+        ul.right.hide-on-med-and-down style="position:absolute;top:0 !important;right:0;"
+          - if ! session[:user].nil?
+            li.user data-user="#{Base64.encode64(session[:user].info['email']).chomp}"
+              a.white-text.dropdown-button href="#!" data-activates="dropdown" data-beloworigin="true"
+                span.left style="padding-right:15px; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                  | #{session[:user].info['first_name']}
+                img.circle.profile_img.right alt="Profile Picture" src="#{session[:user].info['image']}"/
+                .clearfix
+          - else
+            li
+              a.login_button.white-text
+                i.material-icons.right> perm_identity
+                | Login
+        .container
+          a.button-collapse data-activates="nav-mobile" href="#"
+            i.material-icons.white-text menu
+        ul#nav-mobile.side-nav
+          li
+            a href="#{request.base_url}/analyse"  Analyse
+          li
+            a href="#{request.base_url}/my_results"  My Results
+          - if ! session[:user].nil?
+            li
+              a href="#{request.base_url}/logout"  Logout
+          - else
+            li
+              a.login_button  Login
+
+    == yield
+
+    #loading_modal.modal
+      .modal-content
+        h4#modal_header_text
+        p#modal_text
+        .progress
+          .indeterminate.light-blue.accent-2
+
+
+    /! Dropdown Structure
+    ul#dropdown.dropdown-content.collection style="z-index:5;"
+      li.collection-item.avatar onclick="location.href='#{request.base_url}/faq';"
+        i.material-icons.circle.light-blue.accent-3  live_help
+        span.title FAQs
+      li.collection-item.avatar
+        i.material-icons.circle.light-blue.accent-3  feedback
+        span.title Feedback
+      li.collection-item.avatar onclick="location.href='#{request.base_url}/logout';" style="cursor: pointer;"
+        i.material-icons.circle.light-blue.accent-3  power_settings_new
+        span.title Log Out
+
+    script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"
+    script src="https://cdn.plot.ly/plotly-latest.min.js"
+    - if settings.production?
+      script src="#{uri('assets/js/app-' + OctSegmentation::VERSION + '.min.js')}"
+    - else
+      script src="#{uri('assets/js/jquery.fine-uploader.min.js')}"
+      script#qq-template-validation type="text/template"
+        .qq-uploader-selector.qq-uploader qq-drop-area-text=("Drop files here")
+          .qq-total-progress-bar-container-selector.qq-total-progress-bar-container
+            .qq-total-progress-bar-selector.qq-progress-bar.qq-total-progress-bar aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"
+          .qq-upload-drop-area-selector.qq-upload-drop-area qq-hide-dropzone=""
+            span.qq-upload-drop-area-text-selector
+          .qq-upload-button-selector.qq-upload-button
+            div Select files
+          span.qq-drop-processing-selector.qq-drop-processing
+            span Processing dropped files...
+            span.qq-drop-processing-spinner-selector.qq-drop-processing-spinner
+          ul.qq-upload-list-selector.qq-upload-list aria-live="polite" aria-relevant=("additions removals")
+            li
+              .qq-progress-bar-container-selector
+                .qq-progress-bar-selector.qq-progress-bar aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"
+              span.qq-upload-spinner-selector.qq-upload-spinner
+              img.qq-thumbnail-selector qq-max-size="100" qq-server-scale="" /
+              span.qq-upload-file-selector.qq-upload-file
+              span.qq-upload-size-selector.qq-upload-size
+              button.qq-btn.qq-upload-cancel-selector.qq-upload-cancel type="button"  Cancel
+              button.qq-btn.qq-upload-retry-selector.qq-upload-retry type="button"  Retry
+              button.qq-btn.qq-upload-delete-selector.qq-upload-delete type="button"  Delete
+              span.qq-upload-status-text-selector.qq-upload-status-text role="status"
+          dialog.qq-alert-dialog-selector
+            .qq-dialog-message-selector
+            .qq-dialog-buttons
+              button.qq-cancel-button-selector type="button"  Close
+          dialog.qq-confirm-dialog-selector
+            .qq-dialog-message-selector
+            .qq-dialog-buttons
+              button.qq-cancel-button-selector type="button"  No
+              button.qq-ok-button-selector type="button"  Yes
+          dialog.qq-prompt-dialog-selector
+            .qq-dialog-message-selector
+            input type="text" /
+            .qq-dialog-buttons
+              button.qq-cancel-button-selector type="button"  Cancel
+              button.qq-ok-button-selector type="button"  Ok
+      script src="#{uri('assets/js/app.js')}"

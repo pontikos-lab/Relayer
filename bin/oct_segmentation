@@ -1,0 +1,140 @@
+#!/usr/bin/env ruby
+require 'readline'
+require 'English'
+require 'slop'
+
+ENV['RACK_ENV'] ||= 'production'
+
+# display name for tools like `ps`
+$PROGRAM_NAME = 'OctSegmentation'
+
+begin
+  Slop.parse!(strict: true, help: true) do
+    banner <<BANNER
+SUMMARY:
+  OctSegmentation - A easy to use web tool for segmenting OCT scans.
+
+USAGE:
+  $ oct_segmentation [options]
+
+Examples:
+  # Launch OctSegmentation with the given config file
+  $ oct_segmentation --config ~/.oct_segmentation.conf
+
+  # Launch OctSegmentation with 8 threads at port 8888
+  $ oct_segmentation --num_threads 8 --port 8888
+
+BANNER
+    on 'c', 'config_file=',
+       'Use the given configuration file',
+       argument: true
+
+    on 'g', 'data_dir=',
+       'The directory storing all app files and from where the app is served from.',
+       argument: true
+
+    on 'n', 'num_threads=',
+       'Number of threads to use in order to run an analysis',
+       argument: true
+
+    on 'H', 'host=',
+       'Host to run OctSegmentation on',
+       argument: true
+
+    on 'p', 'port=',
+       'Port to run OctSegmentation on',
+       argument: true
+
+    on 's', 'set',
+       'Set configuration value in default or given config file'
+
+    on 'D', 'devel',
+       'Start OctSegmentation in development mode'
+
+    on '-v', '--version',
+       'Print version number of OctSegmentation that will be loaded'
+
+    on '-h', '--help',
+       'Display this help message'
+
+    clean_opts = lambda do |hash|
+      hash.delete_if { |k, v| k == :set || v.nil? }
+      hash
+    end
+
+    run do
+      if version?
+        require 'oct_segmentation/version'
+        puts OctSegmentation::VERSION
+        exit
+      end
+
+      ENV['RACK_ENV'] = 'development' if devel?
+
+      # Exit gracefully on SIGINT.
+      stty = `stty -g`.chomp
+      trap('INT') do
+        puts ''
+        puts 'Aborted.'
+        system('stty', stty)
+        exit
+      end
+
+      require 'oct_segmentation'
+
+      begin
+        OctSegmentation.init clean_opts[to_h]
+
+      # The aim of following error recovery scenarios is to guide user to a
+      # working OctSegmentation installation. We expect to land following
+      # error scenarios either when creating a new OctSegmentation (first
+      # time or later), or updating config values using -s CLI option.
+
+      rescue OctSegmentation::CONFIG_FILE_ERROR => e
+
+        puts e
+        exit!
+
+      rescue OctSegmentation::NUM_THREADS_INCORRECT => e
+
+        puts e
+
+        unless num_threads?
+          puts 'You can set the correct value by running:'
+          puts
+          puts '  oct_segmentation -s -n <value>'
+          puts
+        end
+
+        exit!
+
+      rescue => e
+        # This will catch any unhandled error and some very special errors.
+        # Ideally we will never hit this block. If we do, there's a bug in
+        # OctSegmentation or something really weird going on. If we hit this
+        # error block we show the stacktrace to the user requesting them to
+        # post the same to our Google Group.
+        puts <<MSG
+Something went wonky
+
+Looks like you have encountered a bug in OctSegmentation. Please could you
+report this incident here -
+https://github.com/IsmailM/OctSegmentation/issues
+
+Error:
+#{e.backtrace.unshift(e.message).join("\n")}
+MSG
+        exit
+      end
+
+      OctSegmentation.config.write_config_file if set?
+      OctSegmentation.config.write_config_file if fetch_option(:set).value
+
+      OctSegmentation.run
+    end
+  end
+rescue Slop::Error => e
+  puts e
+  puts "Run '#{$PROGRAM_NAME} -h' for help with command line options."
+  exit
+end
