@@ -6,10 +6,10 @@ html lang="en"
     title OCT Segmentation
     link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
     link type="text/css" rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
+    link type="text/css" rel="stylesheet"  href="#{uri('assets/css/fine-uploader/fine-uploader-new.min.css')}"
     - if settings.production?
       link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app-' + OctSegmentation::VERSION + '.min.css')}"
     - else
-      link type="text/css" rel="stylesheet"  href="#{uri('assets/css/fine-uploader/fine-uploader-new.min.css')}"
       link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app.css')}"
 
   body.app
@@ -81,46 +81,46 @@ html lang="en"
     script src="https://code.jquery.com/jquery-3.2.1.min.js"
     script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"
     script src="https://cdn.plot.ly/plotly-latest.min.js"
+    script#qq-template-validation type="text/template"
+      .qq-uploader-selector.qq-uploader qq-drop-area-text=("Drop files here")
+        .qq-total-progress-bar-container-selector.qq-total-progress-bar-container
+          .qq-total-progress-bar-selector.qq-progress-bar.qq-total-progress-bar aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"
+        .qq-upload-drop-area-selector.qq-upload-drop-area qq-hide-dropzone=""
+          span.qq-upload-drop-area-text-selector
+        .qq-upload-button-selector.qq-upload-button
+          div Select files
+        span.qq-drop-processing-selector.qq-drop-processing
+          span Processing dropped files...
+          span.qq-drop-processing-spinner-selector.qq-drop-processing-spinner
+        ul.qq-upload-list-selector.qq-upload-list aria-live="polite" aria-relevant=("additions removals")
+          li
+            .qq-progress-bar-container-selector
+              .qq-progress-bar-selector.qq-progress-bar aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"
+            span.qq-upload-spinner-selector.qq-upload-spinner
+            img.qq-thumbnail-selector qq-max-size="100" qq-server-scale="" /
+            span.qq-upload-file-selector.qq-upload-file
+            span.qq-upload-size-selector.qq-upload-size
+            button.qq-btn.qq-upload-cancel-selector.qq-upload-cancel type="button"  Cancel
+            button.qq-btn.qq-upload-retry-selector.qq-upload-retry type="button"  Retry
+            button.qq-btn.qq-upload-delete-selector.qq-upload-delete type="button"  Delete
+            span.qq-upload-status-text-selector.qq-upload-status-text role="status"
+        dialog.qq-alert-dialog-selector
+          .qq-dialog-message-selector
+          .qq-dialog-buttons
+            button.qq-cancel-button-selector type="button"  Close
+        dialog.qq-confirm-dialog-selector
+          .qq-dialog-message-selector
+          .qq-dialog-buttons
+            button.qq-cancel-button-selector type="button"  No
+            button.qq-ok-button-selector type="button"  Yes
+        dialog.qq-prompt-dialog-selector
+          .qq-dialog-message-selector
+          input type="text" /
+          .qq-dialog-buttons
+            button.qq-cancel-button-selector type="button"  Cancel
+            button.qq-ok-button-selector type="button"  Ok
     - if settings.production?
       script src="#{uri('assets/js/app-' + OctSegmentation::VERSION + '.min.js')}"
     - else
       script src="#{uri('assets/js/jquery.fine-uploader.min.js')}"
-      script#qq-template-validation type="text/template"
-        .qq-uploader-selector.qq-uploader qq-drop-area-text=("Drop files here")
-          .qq-total-progress-bar-container-selector.qq-total-progress-bar-container
-            .qq-total-progress-bar-selector.qq-progress-bar.qq-total-progress-bar aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"
-          .qq-upload-drop-area-selector.qq-upload-drop-area qq-hide-dropzone=""
-            span.qq-upload-drop-area-text-selector
-          .qq-upload-button-selector.qq-upload-button
-            div Select files
-          span.qq-drop-processing-selector.qq-drop-processing
-            span Processing dropped files...
-            span.qq-drop-processing-spinner-selector.qq-drop-processing-spinner
-          ul.qq-upload-list-selector.qq-upload-list aria-live="polite" aria-relevant=("additions removals")
-            li
-              .qq-progress-bar-container-selector
-                .qq-progress-bar-selector.qq-progress-bar aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" role="progressbar"
-              span.qq-upload-spinner-selector.qq-upload-spinner
-              img.qq-thumbnail-selector qq-max-size="100" qq-server-scale="" /
-              span.qq-upload-file-selector.qq-upload-file
-              span.qq-upload-size-selector.qq-upload-size
-              button.qq-btn.qq-upload-cancel-selector.qq-upload-cancel type="button"  Cancel
-              button.qq-btn.qq-upload-retry-selector.qq-upload-retry type="button"  Retry
-              button.qq-btn.qq-upload-delete-selector.qq-upload-delete type="button"  Delete
-              span.qq-upload-status-text-selector.qq-upload-status-text role="status"
-          dialog.qq-alert-dialog-selector
-            .qq-dialog-message-selector
-            .qq-dialog-buttons
-              button.qq-cancel-button-selector type="button"  Close
-          dialog.qq-confirm-dialog-selector
-            .qq-dialog-message-selector
-            .qq-dialog-buttons
-              button.qq-cancel-button-selector type="button"  No
-              button.qq-ok-button-selector type="button"  Yes
-          dialog.qq-prompt-dialog-selector
-            .qq-dialog-message-selector
-            input type="text" /
-            .qq-dialog-buttons
-              button.qq-cancel-button-selector type="button"  Cancel
-              button.qq-ok-button-selector type="button"  Ok
       script src="#{uri('assets/js/app.js')}"
