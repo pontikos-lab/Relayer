@@ -1,3 +1,3 @@
-require 'geodiver'
-GeoDiver.init
-run GeoDiver
+require 'oct_segmentation'
+OctSegmentation.init
+run OctSegmentation
