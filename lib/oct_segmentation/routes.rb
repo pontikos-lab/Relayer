@@ -1,4 +1,5 @@
 require 'base64'
+require 'English'
 require 'json'
 require 'omniauth'
 require 'omniauth-google-oauth2'
@@ -43,7 +44,7 @@ module OctSegmentation
     end
 
     helpers do
-      # Overide default URI helper method - to hardcode a https://
+      # Overides default URI helper method - to hardcode a https://
       # In our setup, we are running passenger on http:// (not secure) and then
       # reverse proxying that onto a 443 port (i.e. https://)
       # Generates the absolute URI for a given path in the app.
@@ -80,33 +81,64 @@ module OctSegmentation
       slim :index, layout: false
     end
 
+    get '/analyse' do
+      slim :analyse, layout: :app_layout
+    end
+
     # Run the OctSegmentation Analysis
     post '/analyse' do
-      slim :results, layout: false
+      user = 'OctSegmentation'
+      results = params[:files].values.collect do |f|
+        OctSegmentationAnalysis.run(f, user)
+      end
+      puts "Completed to run"
+      'hello World'
+    end
+
+    post '/upload' do
+      dir = File.join(OctSegmentation.tmp_dir, params[:qquuid])
+      FileUtils.mkdir(dir) unless File.exists?(dir)
+      fname = "#{params[:qqfilename]}"
+      fname += ".part_#{params[:qqpartindex]}" if !params[:qqtotalparts].nil?
+      FileUtils.cp(params[:qqfile][:tempfile].path, File.join(dir, fname))
+      { success: true }.to_json
+    end
+
+    post '/upload_done' do
+      parts = params[:qqtotalparts].to_i - 1
+      fname = params[:qqfilename]
+      dir   = File.join(OctSegmentation.tmp_dir, params[:qquuid])
+      files = (0..parts).map { |i| File.join(dir, "#{fname}.part_#{i}") }
+      system("cat #{files.join(' ')} > #{File.join(dir, fname)}")
+      if $CHILD_STATUS.exitstatus == 0
+        system("rm #{files.join(' ')}")
+        { success: true}.to_json
+      else
+        { success: false}.to_json
+      end
     end
 
     # This error block will only ever be hit if the user gives us a funny
-    # sequence or incorrect advanced parameter. Well, we could hit this block
-    # if someone is playing around with our HTTP API too.
-    # error LoadGeoData::ArgumentError, GeoAnalysis::ArgumentError do
-    #   status 400
-    #   slim :"500", layout: false
-    # end
+    # parameter. Well, we could hit this block if someone is playing around
+    # with our HTTP API too.
+    error OctSegmentationAnalysis::ArgumentError do
+      status 400
+      slim :"500", layout: false
+    end
 
     # This will catch any unhandled error and some very special errors. Ideally
     # we will never hit this block. If we do, there's a bug in GeneValidatorApp
     # or something really weird going on.
     # TODO: If we hit this error block we show the stacktrace to the user
     # requesting them to post the same to our Google Group.
-    # error Exception, LoadGeoData::RuntimeError, GeoAnalysis::RuntimeError do
-    error Exception do
+    error Exception, OctSegmentationAnalysis::RuntimeError do
       status 500
       slim :"500", layout: false
     end
 
     not_found do
       status 404
-      slim :"404", layout: :app_layout
+      slim :"404", layout: false
     end
   end
 end

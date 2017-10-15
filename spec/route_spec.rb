@@ -50,7 +50,7 @@ module OctSegmentation
     # end
 
     it 'validate the html' do
-      get '/'
+      get '/analyse'
       html = last_response.body
 
       validator = MarkupValidator.new
