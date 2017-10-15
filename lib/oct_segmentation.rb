@@ -36,6 +36,11 @@ module OctSegmentation
       @config = Config.new(config)
 
       init_dirs
+      logger.debug "OctSegmentation Directory: #{config[:oct_segmentation_dir]}"
+      logger.debug "public_dir Directory: #{public_dir}"
+      logger.debug "users_dir Directory: #{users_dir}"
+      logger.debug "tmp_dir Directory: #{tmp_dir}"
+
       set_up_default_user_dir
       check_num_threads
 
@@ -46,7 +51,12 @@ module OctSegmentation
       # is run via Apache/Nginx + Passenger, we don't need to worry.
     end
 
-    attr_reader :config, :oct_segmentation_dir, :public_dir, :users_dir, :db_dir
+    # oct_segmentation_dir = $HOME/.oct_segmentation/
+    # public_dir           = $HOME/.oct_segmentation/public/
+    # users_dir            = $HOME/.oct_segmentation/users/
+    # tmp_dir              = $HOME/.oct_segmentation/tmp/
+    attr_reader :config, :oct_segmentation_dir, :public_dir, :users_dir,
+                :tmp_dir
 
     # Starting the app manually
     def run
@@ -89,32 +99,35 @@ module OctSegmentation
     # Set up the directory structure in @config[:gd_public_dir]
     def init_dirs
       config[:oct_segmentation_dir] = File.expand_path config[:oct_segmentation_dir]
-      logger.debug "OctSegmentation Directory: #{config[:oct_segmentation_dir]}"
-      @public_dir = create_public_dir
-      @users_dir  = File.expand_path('../Users', @public_dir)
+      @public_dir = File.join(config[:oct_segmentation_dir], 'public')
+      @users_dir  = File.expand_path('../users', @public_dir)
+      @tmp_dir    =  File.expand_path('../tmp', @public_dir)
+      init_public_dir
       FileUtils.mkdir_p @users_dir unless Dir.exist? @users_dir
+      FileUtils.mkdir_p @tmp_dir unless Dir.exist? @tmp_dir
     end
 
     # Create the public dir, if already created and the right CSS/JS version do
     # not exist then remove the existing assets and copy over the new assets
-    def create_public_dir
-      public_dir = File.join(config[:oct_segmentation_dir], 'public')
-      if Dir.exist?(public_dir) &&
-         !File.exist?(File.join(public_dir, 'assets/css',
-                                "style-#{OctSegmentation::VERSION}.min.css"))
-        FileUtils.rm_r File.join(public_dir, 'assets')
+    def init_public_dir
+      root_assets = File.join(OctSegmentation.root, 'public/assets')
+      root_data = File.join(OctSegmentation.root, 'public/OctSegmentation')
+      if Dir.exist?(@public_dir)
+        FileUtils.rm_r File.join(@public_dir, 'assets')
       else
-        FileUtils.mkdir_p public_dir
-        FileUtils.cp_r(File.join(OctSegmentation.root, 'public/OctSegmentation'), public_dir)
+        FileUtils.mkdir_p @public_dir
+        FileUtils.cp_r(root_data, @public_dir)
       end
-      FileUtils.cp_r(File.join(OctSegmentation.root, 'public/assets'), public_dir)
-      logger.debug "Public Directory: #{public_dir}"
-      public_dir
+      if environment == 'development'
+        FileUtils.ln_s(root_assets, @public_dir)
+      else
+        FileUtils.cp_r(root_assets, @public_dir)
+      end
     end
 
     def set_up_default_user_dir
       user_dir    = File.join(OctSegmentation.users_dir, 'OctSegmentation')
-      user_public = File.join(OctSegmentation.public_dir, 'OctSegmentation/Users')
+      user_public = File.join(OctSegmentation.public_dir, 'OctSegmentation/users')
       FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
       return if File.exist? File.join(user_public, 'OctSegmentation')
       FileUtils.ln_s(user_dir, user_public)
