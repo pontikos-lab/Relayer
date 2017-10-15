@@ -28,8 +28,9 @@ task :assets do
   sh 'cleancss --s0 -s --skip-rebase -o' \
      " './public/assets/css/app-#{OctSegmentation::VERSION}.min.css'" \
      " './public/assets/css/app.css'"
-  sh "uglifyjs './public/assets/js/datatable-materialize.js'" \
-     " './public/assets/js/jquery.filedownload.min.js'" \
+  sh "uglifyjs './public/assets/js/jquery.fine-uploader.min.js'" \
      " './public/assets/js/app.js' -m -c -o" \
      " './public/assets/js/app-#{OctSegmentation::VERSION}.min.js'"
 end
+
+
