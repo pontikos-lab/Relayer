@@ -5,6 +5,7 @@ require 'oct_segmentation/config'
 require 'oct_segmentation/exceptions'
 require 'oct_segmentation/logger'
 require 'oct_segmentation/routes'
+require 'oct_segmentation/oct_segmentation_analysis'
 require 'oct_segmentation/server'
 require 'oct_segmentation/version'
 

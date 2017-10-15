@@ -5,6 +5,7 @@ require 'omniauth-google-oauth2'
 require 'sinatra/base'
 require 'slim'
 
+require 'oct_segmentation/oct_segmentation_analysis'
 require 'oct_segmentation/version'
 
 module OctSegmentation
