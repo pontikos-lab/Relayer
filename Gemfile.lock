@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    geodiver (0.0.1)
+    geodiver (0.0.2)
       omniauth (~> 1.6)
       omniauth-google-oauth2 (~> 0.5)
       passenger (~> 5.1)
