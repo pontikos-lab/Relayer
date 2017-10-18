@@ -32,6 +32,7 @@ module OctSegmentation
       def run(params, user)
         init(params, user)
         run_matlab
+        {run_dir: @uniq_time, exit_code: @matlab_exit_code}
       end
 
       private
@@ -66,8 +67,8 @@ module OctSegmentation
         @run_dir = File.join(users_dir, @user, @uniq_time)
         logger.debug("Creating Run Directory: #{@run_dir}")
         FileUtils.mkdir_p(@run_dir)
-        @input = File.join(@run_dir, @params[:originalName])
-        FileUtils.mv(@tmp_input, @input)
+        @input_file = File.join(@run_dir, @params[:originalName])
+        FileUtils.mv(@tmp_input, @input_file)
         dump_params_to_file
       end
 
@@ -78,7 +79,22 @@ module OctSegmentation
       end
 
       def run_matlab
-        sleep(10)
+        logger.debug("Running CMD: #{matlab_cmd(@input_file)}")
+        system(matlab_cmd(@input_file))
+        @matlab_exit_code = $CHILD_STATUS.exitstatus
+        logger.debug(@matlab_exit_code)
+      end
+
+      def matlab_cmd(input_file)
+        "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
+        "addpath(genpath('#{config[:oct_library_path]}'));" \
+        "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
+        '[~,~,~,thickness]=processVolumeTopcon3DOCT2000(octVolume, 1);' \
+        'final_thickness = round((thickness.*2.3), 2);' \
+        "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
+        'fprintf(fileID, jsonencode(final_thickness));' \
+        'fclose(fileID);' \
+        'exit;"'
       end
     end
   end

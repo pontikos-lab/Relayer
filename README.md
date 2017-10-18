@@ -15,8 +15,19 @@ Feel free to give us a shout on the github issues, if you would like more help t
 ### Installation Requirements
 * Ruby (>= 2.2.0)
   * Recommended to use [rvm](https://rvm.io/rvm/install) to install ruby
-* Matlab (=2016a)
-  * Installation from [here](https://google.co.uk)
+* Matlab (=2016b)
+  * Installation from [here](https://www.mathworks.com/products/matlab.html)
+
+### Setting up Matlab
+
+Next simply run the following:
+
+```bash
+# Initialize the submodules
+git submodule init
+```
+
+If the last command above does not work, this may be because Matlab is not in your $PATH, please check where the matlab binary is located and add it to your PATH (the app requires matlab to be in one's $PATH).
 
 ### App Installation
 Simply run the following command in the terminal.
@@ -90,6 +101,8 @@ A Config file can be used to specify arguments - the default location of this fi
 :host: 0.0.0.0
 :data_dir: "/Users/ismailm/.oct_segmentation"
 :devel: true
+:matlab_bin: "/Applications/MATLAB_R2017a.app/bin/matlab"
+:oct_library_path: "/Users/ismailm/oct_segmentataion/octAnalysis"
 ```
 
 

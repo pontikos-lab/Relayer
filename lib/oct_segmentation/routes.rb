@@ -87,12 +87,8 @@ module OctSegmentation
 
     # Run the OctSegmentation Analysis
     post '/analyse' do
-      user = 'OctSegmentation'
-      results = params[:files].values.collect do |f|
-        OctSegmentationAnalysis.run(f, user)
-      end
-      puts "Completed to run"
-      'hello World'
+      u = 'OctSegmentation'
+      params[:files].collect { |_, f| OctSegmentationAnalysis.run(f, u) }.to_json
     end
 
     post '/upload' do

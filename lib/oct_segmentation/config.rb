@@ -75,7 +75,9 @@ module OctSegmentation
         port: 9292,
         host: '0.0.0.0',
         oct_segmentation_dir: File.join(Dir.home, '.oct_segmentation/'),
-        ssl: false
+        ssl: false,
+        matlab_bin: "matlab",
+        oct_library_path: File.join(OctSegmentation.root, 'matlab')
       }
     end
 

@@ -33,6 +33,14 @@ BANNER
        'The directory storing all app files and from where the app is served from.',
        argument: true
 
+    on 'm', 'matlab_bin=',
+       'The full path to the matlab binary.',
+       argument: true
+
+    on 'm', 'oct_library_path=',
+       'The full path to the matlab library for OCT segmentation analysis.',
+       argument: true
+
     on 'n', 'num_threads=',
        'Number of threads to use in order to run an analysis',
        argument: true

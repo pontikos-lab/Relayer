@@ -53,9 +53,13 @@ if (!OS) {
         url: '/analyse',
         type: 'post',
         data: {'files': OS.fineUploader.getUploads()},
+        dataType: "json",
         success: function(data) {
           $('#loading_modal').modal('close');
-          console.log(data);
+          $('#analysis_results').show();
+          for (var i = 0; i < data.length; i++) {
+            OS.produceResults(data[i]);
+          }
         },
         error: function(xhr) {
           $('#loading_modal').modal('close');
@@ -64,6 +68,30 @@ if (!OS) {
       });
     });
   };
+
+  OS.produceResults = function(data) {
+    jsonFile = 'OctSegmentation/users/OctSegmentation/'+ data.run_dir +
+               '/thickness.json';
+    $.getJSON(jsonFile, function(json) {
+      OS.surfacePlot = OS.create3dSurfacePlot(json);
+      window.addEventListener('resize', function() {
+        /** global: Plotly */
+        Plotly.Plots.resize(OS.surfacePlot);
+      });
+    });
+  };
+
+  OS.create3dSurfacePlot = function(z_data) {
+    var data = [{z: z_data, type: 'surface'}];
+    var layout = {title: 'OCT Segmentation'};
+    var parentWidth = 100;
+    var surfacePlotNode = Plotly.d3.select('#surface_plot')
+                                .style({width: parentWidth + '%',
+                                 'margin-left': (100 - parentWidth) / 2 + '%'});
+    var surfacePlot = surfacePlotNode.node();
+    Plotly.newPlot(surfacePlot, data, layout);
+    return  surfacePlot;
+  };
 }());
 
 (function($) {
@@ -71,7 +99,5 @@ if (!OS) {
     OS.initFineUploader();
     OS.initSubmit();
     $('#loading_modal').modal({dismissible: false});
-
-
   });
 })(jQuery);
