@@ -85,15 +85,22 @@ module OctSegmentation
         logger.debug(@matlab_exit_code)
       end
 
+      # Heidenberg Engineering Spectralis OCT 1= 1;
+      # TopCon 3D OCT-2000 = 2;
       def matlab_cmd(input_file)
+        factor = machine_code == 1 ? 3.87 : 2.59
         "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
         "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
-        '[~,~,~,thickness]=processVolumeTopcon3DOCT2000(octVolume, 1);' \
-        'final_thickness = round((thickness.*2.3), 2);' \
+        '[ILM,RPE,ISOS,thickness]=processVolume(octVolume, 2);' \
+        "final_thickness = round((thickness.*#{factor}), 2);" \
         "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
         'fprintf(fileID, jsonencode(final_thickness));' \
         'fclose(fileID);' \
+        "csvwrite('#{File.join(@run_dir, 'ILM.csv')}',ILM)" \
+        "csvwrite('#{File.join(@run_dir, 'RPE.csv')}',RPE)" \
+        "csvwrite('#{File.join(@run_dir, 'ISOS.csv')}',ISOS)" \
+        "csvwrite('#{File.join(@run_dir, 'thickness.csv')}',final_thickness)" \
         'exit;"'
       end
     end
