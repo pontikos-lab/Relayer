@@ -154,7 +154,7 @@ module OctSegmentation
     def server_url
       host = config[:host]
       host = 'localhost' if host == '127.0.0.1' || host == '0.0.0.0'
-      "http://#{host}:#{config[:port]}"
+      "http://#{host}:#{config[:port]}/analyse"
     end
 
     def open_in_browser(server_url)
