@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'oct_segmentation/version'
+require 'relayer/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'geodiver'
-  spec.version       = OctSegmentation::VERSION
+  spec.name          = 'relayer'
+  spec.version       = Relayer::VERSION
   spec.authors       = ['Ismail Moghul', 'et al']
   spec.email         = 'ismail.moghul@gmail.com'
   spec.summary       = 'OCT Segmentation.'
   spec.description   = 'OCT Segmentation.'
-  spec.homepage      = 'https://github.com/IsmailM/oct_segmentation'
+  spec.homepage      = 'https://github.com/IsmailM/relayer'
   spec.license       = 'AGPL'
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -27,23 +27,23 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'capybara', '~> 2.4', '>= 2.4.4'
   spec.add_development_dependency 'w3c_validators', '~>1.1'
 
-  spec.add_dependency 'passenger', '~>5.1'
-  spec.add_dependency 'omniauth', '~>1.6'
-  spec.add_dependency 'omniauth-google-oauth2', '~>0.5'
+  # spec.add_dependency 'passenger', '~>5.1'
+  # spec.add_dependency 'omniauth', '~>1.6'
+  # spec.add_dependency 'omniauth-google-oauth2', '~>0.5'
   spec.add_dependency 'sinatra', '~>2.0'
-  spec.add_dependency 'sinatra-cross_origin', '~> 0.4'
+  # spec.add_dependency 'sinatra-cross_origin', '~> 0.4'
   spec.add_dependency 'slim', '~>3.0'
   spec.add_dependency 'slop', '~>3.6'
   spec.post_install_message = <<INFO
 
 ------------------------------------------------------------------------
-  Thank you for Installing OCT_Segementation!
+  Thank you for Installing Relayer!
 
-  To launch OCT_Segementation execute 'oct_segmentation' from command line.
+  To launch Relayer execute 'relayer' from command line.
 
-    $ oct_segmentation [options]
+    $ relayer [options]
 
-  Visit ... for more information.
+  Visit https://github.com/IsmailM/Relayer for more information.
 ------------------------------------------------------------------------
 
 INFO

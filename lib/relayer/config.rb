@@ -1,12 +1,12 @@
 require 'forwardable'
 
-# OctSegmentation Namespace
-module OctSegmentation
+# Relayer Namespace
+module Relayer
   # Define Config class. Capture our configuration system.
   class Config
     extend Forwardable
 
-    def_delegators OctSegmentation, :logger
+    def_delegators Relayer, :logger
 
     def initialize(data = {})
       @data        = symbolise data
@@ -74,15 +74,15 @@ module OctSegmentation
         num_threads: 1,
         port: 9292,
         host: '0.0.0.0',
-        oct_segmentation_dir: File.join(Dir.home, '.oct_segmentation/'),
+        relayer_dir: File.join(Dir.home, '.relayer/'),
         ssl: false,
         matlab_bin: "matlab",
-        oct_library_path: File.join(OctSegmentation.root, 'matlab')
+        oct_library_path: File.join(Relayer.root, 'matlab')
       }
     end
 
     def default_config_file
-      '~/.oct_segmentation.conf'
+      '~/.relayer.conf'
     end
   end
 end

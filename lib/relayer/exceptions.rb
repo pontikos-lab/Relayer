@@ -1,5 +1,5 @@
 # This file defines all possible exceptions that can be thrown by
-# OctSegmentation on startup.
+# Relayer on startup.
 #
 # Exceptions only ever inform another entity (downstream code or users) of an
 # issue. Exceptions may or may not be recoverable.
@@ -11,7 +11,7 @@
 # making it easy for downstream code (bin/geodiver or config.ru) to act
 # on them.
 
-module OctSegmentation
+module Relayer
   # Error in config file.
   class CONFIG_FILE_ERROR < StandardError
     def initialize(ent, err)

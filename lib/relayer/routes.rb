@@ -6,10 +6,10 @@ require 'omniauth-google-oauth2'
 require 'sinatra/base'
 require 'slim'
 
-require 'oct_segmentation/oct_segmentation_analysis'
-require 'oct_segmentation/version'
+require 'relayer/run_analysis'
+require 'relayer/version'
 
-module OctSegmentation
+module Relayer
   # Sinatra Routes - i.e. The Controller
   class Routes < Sinatra::Base
     # See http://www.sinatrarb.com/configuration.html
@@ -37,10 +37,10 @@ module OctSegmentation
       use Rack::Session::Pool, expire_after: 2_592_000 # 30 days
 
       # view directory will be found here.
-      set :root, -> { OctSegmentation.root }
+      set :root, -> { Relayer.root }
 
       # This is the full path to the public folder...
-      set :public_folder, -> { OctSegmentation.public_dir }
+      set :public_folder, -> { Relayer.public_dir }
     end
 
     helpers do
@@ -53,7 +53,7 @@ module OctSegmentation
         return addr if addr =~ /\A[a-z][a-z0-9\+\.\-]*:/i
         uri = [host = String.new]
         if absolute
-          host << (OctSegmentation.ssl? ? "https://" : "http://")
+          host << (Relayer.ssl? ? "https://" : "http://")
           if request.forwarded? or request.port != (request.secure? ? 443 : 80)
             host << request.host_with_port
           else
@@ -66,7 +66,7 @@ module OctSegmentation
       end
 
       def base_url
-        proxy = OctSegmentation.ssl? ? 'https' : 'http'
+        proxy = Relayer.ssl? ? 'https' : 'http'
         @base_url ||= "#{proxy}://#{request.env['HTTP_HOST']}"
       end
     end
@@ -85,17 +85,17 @@ module OctSegmentation
       slim :analyse, layout: :app_layout
     end
 
-    # Run the OctSegmentation Analysis
+    # Run the Relayer Analysis
     post '/analyse' do
-      u = 'OctSegmentation'
-      params[:files].collect { |_, f| OctSegmentationAnalysis.run(f, u) }.to_json
+      u = 'Relayer'
+      params[:files].collect { |_, f| RelayerAnalysis.run(f, u) }.to_json
     end
 
     post '/upload' do
-      dir = File.join(OctSegmentation.tmp_dir, params[:qquuid])
-      FileUtils.mkdir(dir) unless File.exists?(dir)
-      fname = "#{params[:qqfilename]}"
-      fname += ".part_#{params[:qqpartindex]}" if !params[:qqtotalparts].nil?
+      dir = File.join(Relayer.tmp_dir, params[:qquuid])
+      FileUtils.mkdir(dir) unless File.exist?(dir)
+      fname = params[:qqfilename].to_s
+      fname += ".part_#{params[:qqpartindex]}" unless params[:qqtotalparts].nil?
       FileUtils.cp(params[:qqfile][:tempfile].path, File.join(dir, fname))
       { success: true }.to_json
     end
@@ -103,21 +103,21 @@ module OctSegmentation
     post '/upload_done' do
       parts = params[:qqtotalparts].to_i - 1
       fname = params[:qqfilename]
-      dir   = File.join(OctSegmentation.tmp_dir, params[:qquuid])
+      dir   = File.join(Relayer.tmp_dir, params[:qquuid])
       files = (0..parts).map { |i| File.join(dir, "#{fname}.part_#{i}") }
       system("cat #{files.join(' ')} > #{File.join(dir, fname)}")
-      if $CHILD_STATUS.exitstatus == 0
+      if $CHILD_STATUS.exitstatus.zero?
         system("rm #{files.join(' ')}")
-        { success: true}.to_json
+        { success: true }.to_json
       else
-        { success: false}.to_json
+        { success: false }.to_json
       end
     end
 
     # This error block will only ever be hit if the user gives us a funny
     # parameter. Well, we could hit this block if someone is playing around
     # with our HTTP API too.
-    error OctSegmentationAnalysis::ArgumentError do
+    error RelayerAnalysis::ArgumentError do
       status 400
       slim :"500", layout: false
     end
@@ -127,7 +127,7 @@ module OctSegmentation
     # or something really weird going on.
     # TODO: If we hit this error block we show the stacktrace to the user
     # requesting them to post the same to our Google Group.
-    error Exception, OctSegmentationAnalysis::RuntimeError do
+    error Exception, RelayerAnalysis::RuntimeError do
       status 500
       slim :"500", layout: false
     end

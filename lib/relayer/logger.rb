@@ -1,6 +1,6 @@
 require 'logger'
 
-module OctSegmentation
+module Relayer
   # Extend stdlib's Logger class for custom initialization and log format.
   class Logger < Logger
     def initialize(dev, verbose = true)

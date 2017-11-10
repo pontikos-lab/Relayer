@@ -1,12 +1,12 @@
 require 'English'
 require 'forwardable'
 
-require 'oct_segmentation/pool'
+require 'relayer/pool'
 
-# OctSegmentation NameSpace
-module OctSegmentation
+# Relayer NameSpace
+module Relayer
   # Module to run the OCT Segmentation analysis
-  module OctSegmentationAnalysis
+  module RelayerAnalysis
     # To signal error in parameters provided.
     #
     # ArgumentError is raised when When the file the
@@ -25,14 +25,14 @@ module OctSegmentation
     class << self
       extend Forwardable
 
-      def_delegators OctSegmentation, :config, :logger, :oct_segmentation_dir,
+      def_delegators Relayer, :config, :logger, :relayer_dir,
                      :public_dir, :users_dir, :tmp_dir
 
       # Runs the matlab analysis
       def run(params, user)
         init(params, user)
         run_matlab
-        {run_dir: @uniq_time, exit_code: @matlab_exit_code}
+        { run_dir: @uniq_time, exit_code: @matlab_exit_code }
       end
 
       private
@@ -41,7 +41,7 @@ module OctSegmentation
       def init(params, user)
         @params = params
         @user = user
-        raise ArgumentError, "Failed to upload files" unless assert_params
+        raise ArgumentError, 'Failed to upload files' unless assert_params
         @uniq_time = Time.new.strftime('%Y-%m-%d_%H-%M-%S_%L-%N').to_s
         setup_run_dir
       end
@@ -88,11 +88,12 @@ module OctSegmentation
       # Heidenberg Engineering Spectralis OCT 1= 1;
       # TopCon 3D OCT-2000 = 2;
       def matlab_cmd(input_file)
+        machine_code = 2
         factor = machine_code == 1 ? 3.87 : 2.59
         "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
         "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
-        '[ILM,RPE,ISOS,thickness]=processVolume(octVolume, 2);' \
+        "[ILM,RPE,ISOS,thickness]=processVolume(octVolume, #{machine_code});" \
         "final_thickness = round((thickness.*#{factor}), 2);" \
         "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
         'fprintf(fileID, jsonencode(final_thickness));' \

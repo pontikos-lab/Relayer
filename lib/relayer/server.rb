@@ -1,6 +1,6 @@
 require 'rack/handler/webrick'
 
-module OctSegmentation
+module Relayer
   # Simple wrapper around WEBrick and Rack::Handler::WEBrick to host
   # GeoDiver standalone. Only suggested for developmental purposes or when
   # it is not possible to use a vbetter server (e.g. passenger)
