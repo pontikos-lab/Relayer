@@ -73,7 +73,7 @@ BANNER
     run do
       if version?
         require 'relayer/version'
-        puts relayer::VERSION
+        puts Relayer::VERSION
         exit
       end
 
@@ -91,19 +91,19 @@ BANNER
       require 'relayer'
 
       begin
-        relayer.init clean_opts[to_h]
+        Relayer.init clean_opts[to_h]
 
       # The aim of following error recovery scenarios is to guide user to a
       # working relayer installation. We expect to land following
       # error scenarios either when creating a new relayer (first
       # time or later), or updating config values using -s CLI option.
 
-      rescue relayer::CONFIG_FILE_ERROR => e
+      rescue Relayer::CONFIG_FILE_ERROR => e
 
         puts e
         exit!
 
-      rescue relayer::NUM_THREADS_INCORRECT => e
+      rescue Relayer::NUM_THREADS_INCORRECT => e
 
         puts e
 
@@ -135,10 +135,10 @@ MSG
         exit
       end
 
-      relayer.config.write_config_file if set?
-      relayer.config.write_config_file if fetch_option(:set).value
+      Relayer.config.write_config_file if set?
+      Relayer.config.write_config_file if fetch_option(:set).value
 
-      relayer.run
+      Relayer.run
     end
   end
 rescue Slop::Error => e

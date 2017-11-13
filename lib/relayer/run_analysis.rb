@@ -98,10 +98,10 @@ module Relayer
         "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
         'fprintf(fileID, jsonencode(final_thickness));' \
         'fclose(fileID);' \
-        "csvwrite('#{File.join(@run_dir, 'ILM.csv')}',ILM)" \
-        "csvwrite('#{File.join(@run_dir, 'RPE.csv')}',RPE)" \
-        "csvwrite('#{File.join(@run_dir, 'ISOS.csv')}',ISOS)" \
-        "csvwrite('#{File.join(@run_dir, 'thickness.csv')}',final_thickness)" \
+        "csvwrite('#{File.join(@run_dir, 'ILM.csv')}',ILM);" \
+        "csvwrite('#{File.join(@run_dir, 'RPE.csv')}',RPE);" \
+        "csvwrite('#{File.join(@run_dir, 'ISOS.csv')}',ISOS);" \
+        "csvwrite('#{File.join(@run_dir, 'thickness.csv')}',final_thickness);" \
         'exit;"'
       end
     end

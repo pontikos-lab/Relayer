@@ -8,18 +8,19 @@ html lang="en"
     link type="text/css" rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
     link type="text/css" rel="stylesheet"  href="#{uri('assets/css/fine-uploader/fine-uploader-new.min.css')}"
     - if settings.production?
-      link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app-' + OctSegmentation::VERSION + '.min.css')}"
+      link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app-' + Relayer::VERSION + '.min.css')}"
     - else
       link type="text/css" rel="stylesheet"  href="#{uri('assets/css/app.css')}"
 
   body.app
     nav.cyan.darken-4
       .nav-wrapper
-        span.hide-on-med-and-down.logo
+        span.hide-on-med-and-down.logo style="margin-left:10px"
+          img height="64" src="#{uri('assets/img/logo_white.min.svg')}" alt="Relayer Logo" style="padding: 7px 0;"
           a#logo-container.brand-logo.white-text href="#{request.base_url}"
-            | &nbsp;Oct Segmentation
+            | &nbsp;RELAYER
         a#logo-container.brand-logo.white-text.hide-on-large-only href="#{request.base_url}"
-          | &nbsp;Oct Segmentation
+          | &nbsp;RELAYER
         ul.hide-on-med-and-down.navbar_centered
           li class=('active' if uri =~ %r{/analyse} )
             a.white-text href="#{request.base_url}/analyse"  Analyse
@@ -120,7 +121,7 @@ html lang="en"
             button.qq-cancel-button-selector type="button"  Cancel
             button.qq-ok-button-selector type="button"  Ok
     - if settings.production?
-      script src="#{uri('assets/js/app-' + OctSegmentation::VERSION + '.min.js')}"
+      script src="#{uri('assets/js/app-' + Relayer::VERSION + '.min.js')}"
     - else
       script src="#{uri('assets/js/jquery.fine-uploader.min.js')}"
       script src="#{uri('assets/js/app.js')}"
