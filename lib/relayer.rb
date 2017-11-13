@@ -99,31 +99,36 @@ module Relayer
 
     # Set up the directory structure in @config[:gd_public_dir]
     def init_dirs
-      config[:relayer_dir] = File.expand_path config[:relayer_dir]
-      @public_dir = File.join(config[:relayer_dir], 'public')
-      @users_dir  = File.expand_path('../users', @public_dir)
-      @tmp_dir    =  File.expand_path('../tmp', @public_dir)
+      default_dirs
       init_public_dir
       FileUtils.mkdir_p @users_dir unless Dir.exist? @users_dir
       FileUtils.mkdir_p @tmp_dir unless Dir.exist? @tmp_dir
     end
 
-    # Create the public dir, if already created and the right CSS/JS version do
-    # not exist then remove the existing assets and copy over the new assets
+    def default_dirs
+      config[:relayer_dir] = File.expand_path config[:relayer_dir]
+      @public_dir = File.join(config[:relayer_dir], 'public')
+      @users_dir = File.join(config[:relayer_dir], 'users')
+      @tmp_dir = File.join(config[:relayer_dir], 'tmp')
+    end
+
     def init_public_dir
+      FileUtils.mkdir_p @public_dir unless Dir.exist?(@public_dir)
       root_assets = File.join(Relayer.root, 'public/assets')
-      root_data = File.join(Relayer.root, 'public/Relayer')
-      if Dir.exist?(@public_dir)
-        FileUtils.rm_r File.join(@public_dir, 'assets')
-      else
-        FileUtils.mkdir_p @public_dir
-        FileUtils.cp_r(root_data, @public_dir)
-      end
+      FileUtils.rm_rf(File.join(@public_dir, 'assets'))
       if environment == 'development'
         FileUtils.ln_s(root_assets, @public_dir)
       else
         FileUtils.cp_r(root_assets, @public_dir)
       end
+      init_public_data_dirs(@public_dir)
+    end
+
+    def init_public_data_dirs(public_dir)
+      root_data = File.join(Relayer.root, 'public/Relayer')
+      public_gd = File.join(public_dir, 'Relayer')
+      return if File.exist?(public_gd)
+      FileUtils.cp_r(root_data, public_dir)
     end
 
     def set_up_default_user_dir
