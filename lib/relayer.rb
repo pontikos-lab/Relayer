@@ -33,23 +33,19 @@ module Relayer
     end
 
     # Setting up the environment before running the app...
+    # We don't validate port and host settings. If Relayer is run
+    # self-hosted, bind will fail on incorrect values. If Relayer
+    # is run via Apache/Nginx + Passenger, we don't need to worry.
     def init(config = {})
       @config = Config.new(config)
+      Thread.abort_on_exception = true if verbose?
 
       init_dirs
-      logger.debug "Relayer Directory: #{config[:relayer_dir]}"
-      logger.debug "public_dir Directory: #{public_dir}"
-      logger.debug "users_dir Directory: #{users_dir}"
-      logger.debug "tmp_dir Directory: #{tmp_dir}"
 
       set_up_default_user_dir
       check_num_threads
 
       self
-
-      # We don't validate port and host settings. If Relayer is run
-      # self-hosted, bind will fail on incorrect values. If Relayer
-      # is run via Apache/Nginx + Passenger, we don't need to worry.
     end
 
     # relayer_dir = $HOME/.relayer/
@@ -110,16 +106,22 @@ module Relayer
       @public_dir = File.join(config[:relayer_dir], 'public')
       @users_dir = File.join(config[:relayer_dir], 'users')
       @tmp_dir = File.join(config[:relayer_dir], 'tmp')
+      logger.debug "Relayer Directory: #{config[:relayer_dir]}"
+      logger.debug "public_dir Directory: #{@public_dir}"
+      logger.debug "users_dir Directory: #{@users_dir}"
+      logger.debug "tmp_dir Directory: #{@tmp_dir}"
     end
 
     def init_public_dir
       FileUtils.mkdir_p @public_dir unless Dir.exist?(@public_dir)
       root_assets = File.join(Relayer.root, 'public/assets')
-      FileUtils.rm_rf(File.join(@public_dir, 'assets'))
+      assets = File.join(@public_dir, 'assets')
       if environment == 'development'
-        FileUtils.ln_s(root_assets, @public_dir)
+        FileUtils.rm_rf(assets) unless File.symlink?(assets)
+        FileUtils.ln_s(root_assets, @public_dir) unless File.exist?(assets)
       else
-        FileUtils.cp_r(root_assets, @public_dir)
+        FileUtils.rm_rf(assets) if File.symlink?(assets)
+        FileUtils.cp_r(root_assets, @public_dir) unless File.exist?(assets)
       end
       init_public_data_dirs(@public_dir)
     end
@@ -158,7 +160,7 @@ module Relayer
 
     def server_url
       host = config[:host]
-      host = 'localhost' if host == '127.0.0.1' || host == '0.0.0.0'
+      host = 'localhost' if ['127.0.0.1', '0.0.0.0'].include? host
       "http://#{host}:#{config[:port]}/analyse"
     end
 
