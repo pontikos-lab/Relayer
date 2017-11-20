@@ -56,6 +56,9 @@ BANNER
     on 's', 'set',
        'Set configuration value in default or given config file'
 
+    on 'i', 'interactive',
+       'Run relayer in interactive mode'
+
     on 'D', 'devel',
        'Start relayer in development mode'
 
@@ -137,6 +140,11 @@ MSG
 
       Relayer.config.write_config_file if set?
       Relayer.config.write_config_file if fetch_option(:set).value
+
+      if interactive?
+        GeoDiver.irb
+        exit
+      end
 
       Relayer.run
     end

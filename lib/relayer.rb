@@ -91,6 +91,15 @@ module Relayer
       Routes.call(env)
     end
 
+    # Run Relayer interactively
+    def irb
+      # rubocop:disable Lint/Debugger
+      ARGV.clear
+      require 'pry'
+      binding.pry
+      # rubocop:enable Lint/Debugger
+    end
+
     private
 
     # Set up the directory structure in @config[:gd_public_dir]
