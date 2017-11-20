@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rack-test', '~> 0.6'
   spec.add_development_dependency 'rake', '~>10.3'
   spec.add_development_dependency 'rspec', '~> 2.8', '>= 2.8.0'
+  spec.add_development_dependency 'sass', '~>3.5'
   spec.add_development_dependency 'w3c_validators', '~>1.1'
 
   # spec.add_dependency 'passenger', '~>5.1'
