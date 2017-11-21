@@ -85,23 +85,19 @@ module Relayer
         logger.debug(@matlab_exit_code)
       end
 
-      # Heidenberg Engineering Spectralis OCT 1= 1;
-      # TopCon 3D OCT-2000 = 2;
+      # Heidelberg Engineering "Spectralis"= 1;
+      # TOPCON "3D-OCT 2000" = 2;
+      # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
       def matlab_cmd(input_file)
         machine_code = 2
-        factor = machine_code == 1 ? 3.87 : 2.59
         "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
         "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
-        "[ILM,RPE,ISOS,thickness]=processVolume(octVolume, #{machine_code});" \
-        "final_thickness = round((thickness.*#{factor}), 2);" \
+        "[~,~,~,thickness] = processVolumeRELAYER(octVolume, #{machine_code},"\
+        " '#{@run_dir}', 0);" \
         "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
-        'fprintf(fileID, jsonencode(final_thickness));' \
+        'fprintf(fileID, jsonencode(round(thickness, 2)));' \
         'fclose(fileID);' \
-        "csvwrite('#{File.join(@run_dir, 'ILM.csv')}',ILM);" \
-        "csvwrite('#{File.join(@run_dir, 'RPE.csv')}',RPE);" \
-        "csvwrite('#{File.join(@run_dir, 'ISOS.csv')}',ISOS);" \
-        "csvwrite('#{File.join(@run_dir, 'thickness.csv')}',final_thickness);" \
         'exit;"'
       end
     end
