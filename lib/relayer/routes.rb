@@ -82,8 +82,8 @@ module Relayer
       slim :index, layout: false
     end
 
-    get '/analyse' do
-      slim :analyse, layout: :app_layout
+    get '/oct_segmentation' do
+      slim :oct_segmentation, layout: :app_layout
     end
 
     # Run the Relayer Analysis

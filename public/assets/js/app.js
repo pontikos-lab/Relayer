@@ -52,7 +52,7 @@ if (!RL) {
             var formData = $("#oct_segmentation_analysis").serializeArray();
             formData.push({ 'files': RL.fineUploader.getUploads() });
             $.ajax({
-                url: '/analyse',
+                url: '/oct_segmentation',
                 type: 'post',
                 data: formData,
                 dataType: "json",
