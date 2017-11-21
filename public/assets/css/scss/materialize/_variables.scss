@@ -31,7 +31,7 @@
 //  25. Progress Bar
 // 1. Colors
 // ==========================================================================
-$primary-color: color("blue", "darken-4") !default;
+$primary-color: color("cyan", "darken-4") !default;
 $primary-color-light: lighten($primary-color, 15%) !default;
 $primary-color-dark: darken($primary-color, 15%) !default;
 $secondary-color: color("teal", "lighten-1") !default;
