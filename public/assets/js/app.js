@@ -60,6 +60,9 @@ if (!RL) {
                     for (var i = 0; i < data.length; i++) {
                         RL.produceResults(data[i]);
                     }
+                    $("html, body").animate({
+                        scrollTop: $('#analysis_results').offset().top
+                    });
                 },
                 error: function(xhr) {
                     $('#loading_modal').modal('close');
