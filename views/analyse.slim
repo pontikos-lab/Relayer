@@ -1,33 +1,31 @@
 #analysis_container.container
   .section
     h1.header.cyan-text.text-darken-4 
-      img height="56" src="#{uri('assets/img/logo_black.min.svg')}" alt="Relayer Logo" style="padding-right:10px;"
-      | RELAYER
+      | OCT Segmentation
     .card.analyse_card
       .card-content.
         span.card-title File Upload
         p.lead Drop your HDF5 files (or a series of images here).
         form#analysis_form
-        .file_space#fine-uploader-validation
+          .file_space#fine-uploader-validation
 
-        p.lead
-        | Once the files have completed to upload, click on the analyse button in order to run the OCT segmentation.
         a#analysis_btn.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3
           i.material-icons.right cloud
           | Analyse
+        p.lead.left
+        | Once the files have completed to upload, click on the analyse button in order to run the OCT segmentation.
         .clearfix
-        p.grey-text style="margin-top:20px;"
+        p#disclaimer.grey-text
           | By using this service, you accept our&nbsp;
-          a href="#" privacy policy
+          a href="#todo" privacy policy
           | &nbsp;and our&nbsp;
-          a href="#" terms and conditions
+          a href="#todo" terms and conditions
           | . Essentially, any files uploaded here should only be used for research purposes and the results shown here should not be interpreted in clinical setting unless one is qualified to do so.
-    #analysis_results style="display:none;"
+    #analysis_results
       h1.header.cyan-text.text-darken-4 Results
       .card.analyse_card
         .card-content.
           span.card-title Surface plot
-          p.lead  This is a 3D plot of the OCT.
-          #surface_plot style="height: 70vh; width: 100%; margin-left: 0%;"
+          p.lead  Retinal thickness: distance in micrometers between ILM (Inner Limiting Membrane) and RPE (Retinal Pigment Epithelium) layers.
+          #surface_plot
           .clearfix
-
