@@ -22,8 +22,8 @@ if (!RL) {
             },
             thumbnails: {
                 placeholders: {
-                    waitingPath: '/assets/css/fine-uploader/placeholders/waiting-generic.png',
-                    notAvailablePath: '/assets/css/fine-uploader/placeholders/not_available-generic.png'
+                    waitingPath: '/assets/img/fine-uploader/placeholders/waiting-generic.png',
+                    notAvailablePath: '/assets/img/fine-uploader/placeholders/not_available-generic.png'
                 }
             },
             validation: {
@@ -41,7 +41,7 @@ if (!RL) {
                 }
             }
         });
-        // RL.fineUploader.addExtraDropzone($('.app')[0]);
+        RL.fineUploader.addExtraDropzone($(".drop_zone_container")[0]);
     };
 
     RL.initSubmit = function() {
@@ -83,7 +83,7 @@ if (!RL) {
 
     RL.create3dSurfacePlot = function(z_data) {
         var data = [{ z: z_data, type: 'surface' }];
-        var layout = { title: 'OCT Segmentation' };
+        var layout = { title: 'Retinal Thickness' };
         var parentWidth = 100;
         var surfacePlotNode = Plotly.d3.select('#surface_plot')
             .style({
