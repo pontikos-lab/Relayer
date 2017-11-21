@@ -28,7 +28,7 @@ task :assets do
   " ./public/assets/css/style-#{Relayer::VERSION}.min.css"
   `rm ./public/assets/js/app-*.min.js`
   sh "uglifyjs './public/assets/js/jquery.fine-uploader.min.js'" \
-     " './public/assets/js/app.js' -m -c -o" \
+     " './public/assets/js/app.js' -m -c --source-map -o " \
      " './public/assets/js/app-#{Relayer::VERSION}.min.js'"
 end
 
