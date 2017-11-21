@@ -5,6 +5,7 @@ require 'omniauth'
 require 'omniauth-google-oauth2'
 require 'sinatra/base'
 require 'slim'
+require 'slim/smart'
 
 require 'relayer/run_analysis'
 require 'relayer/version'
