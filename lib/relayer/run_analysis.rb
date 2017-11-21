@@ -89,12 +89,12 @@ module Relayer
       # TOPCON "3D-OCT 2000" = 2;
       # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
       def matlab_cmd(input_file)
-        machine_code = 2
+        @params['machine_type'] = 2
         "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
         "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
-        "[~,~,~,thickness] = processVolumeRELAYER(octVolume, #{machine_code},"\
-        " '#{@run_dir}', 0);" \
+        '[~,~,~,thickness] = processVolumeRELAYER(octVolume,'\
+        " #{@params['machine_type']}, '#{@run_dir}', 0);" \
         "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
         'fprintf(fileID, jsonencode(round(thickness, 2)));' \
         'fclose(fileID);' \

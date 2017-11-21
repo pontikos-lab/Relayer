@@ -104,5 +104,6 @@ if (!RL) {
         RL.initFineUploader();
         RL.initSubmit();
         $('#loading_modal').modal({ dismissible: false });
+        $("select").material_select();
     });
 })(jQuery);

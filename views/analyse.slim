@@ -9,6 +9,14 @@
         form#analysis_form
           .file_space#fine-uploader-validation
 
+        .input-field.col.s6
+          select name="machine_type" 
+            option value="" disabled=""  Choose your option
+            option value="1" selected=""
+              | Heidelberg Engineering "Spectralis"
+            option value="2"
+              | TOPCON "3D-OCT 2000"
+          label Machine Type
         a#analysis_btn.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3
           i.material-icons.right cloud
           | Analyse
