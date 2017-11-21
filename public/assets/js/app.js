@@ -49,10 +49,12 @@ if (!RL) {
             $('#loading_modal').modal('open');
             $('#modal_header_text').text('Running Analysis');
             $('#modal_text').text('This should take a few minutes. Please leave this page open');
+            var formData = $("#oct_segmentation_analysis").serializeArray();
+            formData.push({ 'files': RL.fineUploader.getUploads() });
             $.ajax({
                 url: '/analyse',
                 type: 'post',
-                data: { 'files': RL.fineUploader.getUploads() },
+                data: formData,
                 dataType: "json",
                 success: function(data) {
                     $('#loading_modal').modal('close');

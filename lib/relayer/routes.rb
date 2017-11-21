@@ -52,10 +52,10 @@ module Relayer
       # Takes Rack routers and reverse proxies into account.
       def uri(addr = nil, absolute = true, add_script_name = true)
         return addr if addr =~ /\A[a-z][a-z0-9\+\.\-]*:/i
-        uri = [host = String.new]
+        uri = [host = '']
         if absolute
-          host << (Relayer.ssl? ? "https://" : "http://")
-          if request.forwarded? or request.port != (request.secure? ? 443 : 80)
+          host << (Relayer.ssl? ? 'https://' : 'http://')
+          if request.forwarded? || request.port != (request.secure? ? 443 : 80)
             host << request.host_with_port
           else
             host << request.host
@@ -87,9 +87,10 @@ module Relayer
     end
 
     # Run the Relayer Analysis
-    post '/analyse' do
+    post '/oct_segmentation' do
+      p = params
       u = 'Relayer'
-      params[:files].collect { |_, f| RelayerAnalysis.run(f, u) }.to_json
+      params[:files].collect { |_, f| RelayerAnalysis.run(p, f, u) }.to_json
     end
 
     post '/upload' do

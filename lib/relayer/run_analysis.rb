@@ -29,8 +29,9 @@ module Relayer
                      :public_dir, :users_dir, :tmp_dir
 
       # Runs the matlab analysis
-      def run(params, user)
-        init(params, user)
+      def run(params, file_params, user)
+        @params = params
+        init(file_params, user)
         run_matlab
         { run_dir: @uniq_time, exit_code: @matlab_exit_code }
       end
@@ -38,8 +39,8 @@ module Relayer
       private
 
       # sets up analysis
-      def init(params, user)
-        @params = params
+      def init(file_params, user)
+        @file_params = file_params
         @user = user
         raise ArgumentError, 'Failed to upload files' unless assert_params
         @uniq_time = Time.new.strftime('%Y-%m-%d_%H-%M-%S_%L-%N').to_s
@@ -51,15 +52,16 @@ module Relayer
       end
 
       def assert_param_exist
-        !@params.nil?
+        !@file_params.nil?
       end
 
       def assert_upload_status
-        @params[:status] == 'upload successful'
+        @file_params[:status] == 'upload successful'
       end
 
       def assert_file_exists
-        @tmp_input = File.join(tmp_dir, @params[:uuid], @params[:originalName])
+        @tmp_input = File.join(tmp_dir, @file_params[:uuid],
+                               @file_params[:originalName])
         File.exist?(@tmp_input)
       end
 
@@ -67,13 +69,13 @@ module Relayer
         @run_dir = File.join(users_dir, @user, @uniq_time)
         logger.debug("Creating Run Directory: #{@run_dir}")
         FileUtils.mkdir_p(@run_dir)
-        @input_file = File.join(@run_dir, @params[:originalName])
+        @input_file = File.join(@run_dir, @file_params[:originalName])
         FileUtils.mv(@tmp_input, @input_file)
         dump_params_to_file
       end
 
       def dump_params_to_file
-        File.open(File.join(@run_dir, 'params.json'), "w") do |io|
+        File.open(File.join(@run_dir, 'params.json'), 'w') do |io|
           io.puts @params.to_json
         end
       end
@@ -85,16 +87,13 @@ module Relayer
         logger.debug(@matlab_exit_code)
       end
 
-      # Heidelberg Engineering "Spectralis"= 1;
-      # TOPCON "3D-OCT 2000" = 2;
       # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
       def matlab_cmd(input_file)
-        @params['machine_type'] = 2
         "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
         "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
         '[~,~,~,thickness] = processVolumeRELAYER(octVolume,'\
-        " #{@params['machine_type']}, '#{@run_dir}', 0);" \
+        " #{@params['machine_type']}, '#{@run_dir}');" \
         "fileID = fopen('#{File.join(@run_dir, 'thickness.json')}','w');" \
         'fprintf(fileID, jsonencode(round(thickness, 2)));' \
         'fclose(fileID);' \

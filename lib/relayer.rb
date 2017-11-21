@@ -73,7 +73,7 @@ module Relayer
 
     def on_start
       puts '** Relayer is ready.'
-      puts "   Go to #{server_url} in your browser and start analysing GEO datasets!"
+      puts "   Go to #{server_url} in your browser & start analysing OCT Scans!"
       puts '   Press CTRL+C to quit.'
       open_in_browser(server_url)
     end
@@ -167,10 +167,10 @@ module Relayer
                   ' Consider using 127.0.0.1 (--host option).'
     end
 
-    def server_url
+    def server_url(initial_page = 'oct_segmentation')
       host = config[:host]
       host = 'localhost' if ['127.0.0.1', '0.0.0.0'].include? host
-      "http://#{host}:#{config[:port]}/analyse"
+      "http://#{host}:#{config[:port]}/#{initial_page}"
     end
 
     def open_in_browser(server_url)

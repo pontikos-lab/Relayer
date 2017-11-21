@@ -75,10 +75,6 @@ p#disclaimer {
     margin-top: 20px;
 }
 
-#analysis_form {
-    margin-bottom: 1rem;
-}
-
 #analysis_results {
     display: none;
     #surface_plot {
@@ -86,6 +82,10 @@ p#disclaimer {
         width: 100%;
         margin-left: 0%;
     }
+}
+
+.fine-uploader-validation {
+    margin-bottom: 2rem;
 }
 
 .qq-upload-drop-area-active {
@@ -108,11 +108,12 @@ p#disclaimer {
     margin-top: 64px;
     z-index: 50;
     position: fixed;
+    height: 100%;
     min-height: 100%;
-    min-height: 1vh;
+    min-height: 100vh;
+    min-height: fill-available;
     min-height: -webkit-fill-available;
     width: 0;
-    min-width: 100%;
     left: 0;
     top: 0;
 }
