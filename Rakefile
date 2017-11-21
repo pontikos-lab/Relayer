@@ -31,3 +31,13 @@ task :assets do
      " './public/assets/js/app.js' -m -c -o" \
      " './public/assets/js/app-#{Relayer::VERSION}.min.js'"
 end
+
+task :criticalcss do
+  require_relative 'lib/relayer'
+  puts 'Note that Relayer needs to be running on Port 9292 for this to work'
+  puts 'You will need to manually insert the Critical CSS'
+  puts 'You run `npm install` before running this rake command'
+  `rm ./public/assets/css/criticl/home.min.css`
+  `rm ./public/assets/css/criticl/app.min.css`
+  sh "node #{File.join(Relayer.root, 'public/assets/css/critical/critical.js')}"
+end
