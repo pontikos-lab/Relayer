@@ -1,0 +1,118 @@
+body {
+    background: #edf0f5;
+    min-height: 100%;
+    min-height: 1vh;
+    min-height: -webkit-fill-available;
+}
+
+.nav-wrapper {
+    .navbar_centered {
+        left: 50%;
+        transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        position: absolute;
+        top: 0!important;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        li a {
+            min-width: 150px;
+            text-align: center;
+        }
+        li.active,
+        li:hover {
+            -webkit-box-shadow: inset 0 -3px 0 0 #fff;
+            -moz-box-shadow: inset 0 -3px 0 0 #fff;
+            box-shadow: inset 0 -3px 0 0 #fff;
+        }
+    }
+    .logo {
+        img {
+            padding: 7px 0;
+        }
+        a.brand-logo {
+            font-weight: 700;
+        }
+    }
+    .hide-on-med-and-down.logo {
+        margin-left: 10px
+    }
+    ul#dropdown_menu {
+        position: absolute;
+        top: 0 !important;
+        right: 0;
+        #name {
+            padding-right: 15px;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+#user_menu_dropdown {
+    z-index: 5;
+    li#logout {
+        cursor: pointer;
+    }
+}
+
+.card .card-action,
+.card .card-content {
+    padding: 3rem 3.5rem;
+}
+
+.file_space,
+.qq-uploader {
+    min-height: 250px;
+    max-height: 550px;
+    margin-top: 10px;
+}
+
+p#disclaimer {
+    margin-top: 20px;
+}
+
+#analysis_form {
+    margin-bottom: 1rem;
+}
+
+#analysis_results {
+    display: none;
+    #surface_plot {
+        height: 70vh;
+        width: 100%;
+        margin-left: 0%;
+    }
+}
+
+.qq-upload-drop-area-active {
+    background: #3a87ad
+}
+
+.qq-upload-drop-area-active:before {
+    content: attr(qq-drop-area-text) " ";
+    position: absolute;
+    font-size: 400%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    top: 45%;
+    opacity: 0.25;
+    color: #fff;
+}
+
+.drop_zone_container {
+    margin-top: 64px;
+    z-index: 50;
+    position: fixed;
+    min-height: 100%;
+    min-height: 1vh;
+    min-height: -webkit-fill-available;
+    width: 0;
+    min-width: 100%;
+    left: 0;
+    top: 0;
+}

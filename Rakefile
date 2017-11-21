@@ -24,7 +24,7 @@ end
 task :assets do
   require_relative 'lib/relayer/version'
   `rm ./public/assets/css/app-*.min.css`
-  sh 'sass -t compressed ./public/assets/css/scss/materialize.scss' \
+  sh 'sass -t compressed ./public/assets/css/scss/style.scss' \
   " ./public/assets/css/style-#{Relayer::VERSION}.min.css"
   `rm ./public/assets/js/app-*.min.js`
   sh "uglifyjs './public/assets/js/jquery.fine-uploader.min.js'" \
