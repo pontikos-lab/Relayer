@@ -1,52 +1,47 @@
-# OCT Segmentation
-
-
+# ReLayer
 
 ## Introduction
 
-This tool is a web application that segments OCT Scans...
-
-
-
+ReLayer is a web application that segments OCT Scans...
 
 ## Installation
+
 Feel free to give us a shout on the github issues, if you would like more help than that below.
 
 ### Installation Requirements
+
 * Ruby (>= 2.2.0)
   * Recommended to use [rvm](https://rvm.io/rvm/install) to install ruby
 * Matlab (=2016b)
   * Installation from [here](https://www.mathworks.com/products/matlab.html)
-
-### Setting up Matlab
-
-Next simply run the following:
-
-```bash
-# Initialize the submodules
-git submodule init
-```
-
-If the last command above does not work, this may be because Matlab is not in your $PATH, please check where the matlab binary is located and add it to your PATH (the app requires matlab to be in one's $PATH).
+    * The location of the matlab binary is reqiured
 
 ### App Installation
+
 Simply run the following command in the terminal.
 
 ```bash
 # Clone the repository.
-git clone https://github.com/IsmailM/oct_segmentation
+git clone https://github.com/IsmailM/Relayer
 
-# Move into oct_segmentation source directory.
-cd oct_segmentation
+# Move into relayer source directory.
+cd Relayer
+
+# Initialize and update Submodule
+git submodule update --init --recursive
+
+# Install Bundler
+gem install bundler
 
 # Build and install the latest version of the webapp.
 rake install
 
 # Start the web app
-passenger start -p 9292 -e production --sticky-sessions -d
+relayer
 ```
 
-##### Running From Source (Not Recommended)
+#### Running From Source (Not Recommended)
+
 It is also possible to run from source. However, this is not recommended.
 
 ```bash
@@ -57,53 +52,45 @@ gem install bundler
 # Use bundler to install dependencies
 bundle install
 
-# Optional: run tests and build the gem from source
-bundle exec rake
-
-# Run oct_segmentator
+# Run relayer
 bundle exec passenger start -h
-# note that `bundle exec` executes oct_segmentator in the context of the bundle
+# note that `bundle exec` executes relayer in the context of the bundle
 
-# Alternatively run oct_segmentation using the command line interface
-bundle exec oct_segmentation -h
+# Alternatively run relayer using the command line interface
+bundle exec relayer -h
 ```
 
+## Launch relayer
 
-
-
-## Launch oct_segmentator
-
-To configure and launch oct_segmentation, run the following from a command line from the oct_segmentator root folder.
+To configure and launch relayer, run the following from a command line from the relayer root folder.
 
 ```bash
 bundle exec passenger start -h
-
 ```
-That's it! Open http://localhost:9292/ and start using oct_segmentator!
 
-
-
-
-
+That's it! Open [http://localhost:9292/](http://localhost:9292/) and start using relayer!
 
 ## Advanced Usage
 
-See `$ passenger start -h` for more information on all the options available when running oct_segmentator.
+See `$ passenger start -h` for more information on all the options available when running relayer.
 
-# Config file
-A Config file can be used to specify arguments - the default location of this file is in the home directory at `~/.oct_segmentation.conf`. An examplar of the config file can be seen below.
+## Config file
 
+A Config file can be used to specify arguments - the default location of this file is in the home directory at `~/.relayer.conf`. An examplar of the config file can be seen below.
 
 ```yaml
 ---
 :num_threads: 8
-:port: '9292'
+:port: 9292
 :host: 0.0.0.0
-:data_dir: "/Users/ismailm/.oct_segmentation"
-:devel: true
+:relayer_dir: "/Users/ismailm/.relayer"
+:ssl: false
 :matlab_bin: "/Applications/MATLAB_R2017a.app/bin/matlab"
-:oct_library_path: "/Users/ismailm/oct_segmentataion/octAnalysis"
+:oct_library_path: "/Volumes/Data/project/relayer/matlab"
 ```
 
+A config file can be generated using the `-s` argument. The above exemplar config file was generated as follows:
 
-<hr>
+```bash
+relayer -s -m "/Applications/MATLAB_R2017a.app/bin/matlab" -o "/Volumes/Data/project/relayer/matlab" -n 8
+```
