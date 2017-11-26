@@ -116,3 +116,23 @@ p#disclaimer {
     left: 0;
     top: 0;
 }
+
+.segmented_image_wrapper {
+    #segmented_image_title {
+        margin-top: 2rem;
+        text-align: center;
+        font-family: "Open Sans", verdana, arial, sans-serif;
+        font-size: 17px;
+        fill: rgb(68, 68, 68);
+        opacity: 1;
+        font-weight: normal;
+        white-space: pre;
+    }
+    #segmented_image {
+        width: 100%;
+    }
+    #segmented_image_slider {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
+}

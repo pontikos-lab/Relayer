@@ -5,7 +5,7 @@
     .card.analyse_card
       .card-content
         span.card-title File Upload
-        p.lead Drop your HDF5 files (or a series of images here).
+        p.lead Drop a single HDF5 (H5) file or a series of images here (with the filenames numbered file001.jpg, file002.jpg etc.).
         .file_space#fine-uploader-validation
         form#oct_segmentation_analysis
           .row
@@ -24,16 +24,25 @@
         | Once the files have completed to upload, click on the analyse button in order to run the OCT segmentation.
         .clearfix
         p#disclaimer.grey-text
-          | By using this service, you accept our&nbsp;
-          a href="#todo" privacy policy
-          | &nbsp;and our&nbsp;
+          | By using this service, you accept our 
+          a href="#todo" privacy policy 
+          | and our 
           a href="#todo" terms and conditions
           | . Essentially, any files uploaded here should only be used for research purposes and the results shown here should not be interpreted in clinical setting unless one is qualified to do so.
     #analysis_results
       h1.header.cyan-text.text-darken-4 Results
       .card.analyse_card
-        .card-content.
+        .card-content
           span.card-title Surface plot
           p.lead  Retinal thickness: distance in micrometers between ILM (Inner Limiting Membrane) and RPE (Retinal Pigment Epithelium) layers.
-          #surface_plot
+          .row
+            .col.m12.l7
+              #surface_plot
+            .col.m12.l5.segmented_image_wrapper
+              p#segmented_image_title 
+                | Segemented Images (Segment: 
+                span#segmented_image_number 1
+                | )
+              #segmented_image_slider
+              img#segmented_image alt="Segmented OCT Scan"
           .clearfix
