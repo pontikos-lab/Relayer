@@ -1,3 +1,3 @@
-require 'oct_segmentation'
-OctSegmentation.init
-run OctSegmentation
+require 'relayer'
+Relayer.init
+run Relayer
