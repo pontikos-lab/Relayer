@@ -1,8 +1,6 @@
 require 'base64'
 require 'English'
 require 'json'
-require 'omniauth'
-require 'omniauth-google-oauth2'
 require 'sinatra/base'
 require 'slim'
 require 'slim/smart'
