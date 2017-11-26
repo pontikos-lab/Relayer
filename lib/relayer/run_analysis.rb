@@ -34,7 +34,8 @@ module Relayer
         init(params, user)
         run_matlab
         Thread.new { compress_output_dir(@run_dir, @run_out_dir) }
-        { uniq_run: @uniq_time, exit_code: @matlab_exit_code }
+        { uniq_run: @uniq_time, exit_code: @matlab_exit_code, 
+          files: generate_file_list }
       end
 
       private
@@ -129,6 +130,10 @@ module Relayer
         cmd = "zip -jr '#{run_dir}/relayer_results.zip' '#{run_out_dir}'"
         logger.debug("Running CMD: #{cmd}")
         system(cmd)
+      end
+
+      def generate_file_list
+        Dir.enteries("#{@run_out_dir}/*.jpg")
       end
     end
   end
