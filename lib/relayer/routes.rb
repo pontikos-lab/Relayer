@@ -86,9 +86,8 @@ module Relayer
 
     # Run the Relayer Analysis
     post '/oct_segmentation' do
-      p = params
       u = 'Relayer'
-      params[:files].collect { |_, f| RelayerAnalysis.run(p, f, u) }.to_json
+      RelayerAnalysis.run(params, u).to_json
     end
 
     post '/upload' do
