@@ -142,7 +142,7 @@ MSG
       Relayer.config.write_config_file if fetch_option(:set).value
 
       if interactive?
-        GeoDiver.irb
+        Relayer.irb
         exit
       end
 
