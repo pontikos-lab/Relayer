@@ -23,13 +23,14 @@ end
 
 task :assets do
   require_relative 'lib/relayer/version'
-  `rm ./public/assets/css/app-*.min.css`
+  `rm ./public/assets/css/style-*.min.css`
   sh 'sass -t compressed ./public/assets/css/scss/style.scss' \
   " ./public/assets/css/style-#{Relayer::VERSION}.min.css"
   `rm ./public/assets/js/app-*.min.js`
   sh "uglifyjs './public/assets/js/jquery.fine-uploader.min.js'" \
-     " './public/assets/js/app.js' -m -c --source-map -o " \
-     " './public/assets/js/app-#{Relayer::VERSION}.min.js'"
+     " './public/assets/js/nouislider.js' './public/assets/js/underscore.js'" \
+     " './public/assets/js/app.js' -m -c --source-map" \
+     " -o './public/assets/js/app-#{Relayer::VERSION}.min.js'"
 end
 
 task :criticalcss do
