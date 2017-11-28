@@ -139,7 +139,7 @@ if (!RL) {
             ]
         }];
         var layout = {
-            title: 'Retinal Thickness',
+            title: 'Thickness (µm)',
             scene: { zaxis: { range: [0, 600] } }
         };
         var parentWidth = 100;
