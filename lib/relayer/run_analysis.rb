@@ -115,7 +115,7 @@ module Relayer
 
       # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
       def matlab_cmd(input_file)
-        "#{config[:matlab_bin]} -nodisplay -nosplash -r \" " \
+        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
         "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
         '[~,~,~,thickness] = processVolumeRELAYER(octVolume,'\
