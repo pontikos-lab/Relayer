@@ -212,7 +212,8 @@ if (!RL) {
     };
 
     RL.initExemplarResultsBtn = function() {
-        $("#exemplar_output").on('click', function(e) {
+        $(".exemplar_output").on('click', function(e) {
+            $("#beta_modal").modal('close');
             RL.showExemplarResults();
         });
     };
