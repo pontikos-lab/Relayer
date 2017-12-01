@@ -27,11 +27,11 @@ var dimensions = [{
 // });
 
 critical.generate({
-    src: "http://localhost:9292/analyse",
+    src: "http://localhost:3000/oct_segmentation",
     dest: "public/assets/css/critical/app.min.css",
     dimensions: dimensions,
-    ignore: [/url\(/, '@font-face', /print/],
-    include: ['qq-uploader-selector'],
+    ignore: [/url\(/, "@font-face", /print/],
+    include: ["qq-uploader-selector", 'drop_zone_container'],
     timeout: 300000,
     minify: true
 });

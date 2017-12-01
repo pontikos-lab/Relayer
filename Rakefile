@@ -24,9 +24,11 @@ end
 task :assets do
   require_relative 'lib/relayer/version'
   `rm ./public/assets/css/style-*.min.css`
+  `rm ./public/assets/css/style-*.min.css.map`
   sh 'sass -t compressed ./public/assets/css/scss/style.scss' \
   " ./public/assets/css/style-#{Relayer::VERSION}.min.css"
   `rm ./public/assets/js/app-*.min.js`
+  `rm ./public/assets/js/app-*.min.js.map`
   sh "uglifyjs './public/assets/js/jquery.fine-uploader.min.js'" \
      " './public/assets/js/nouislider.js' './public/assets/js/underscore.js'" \
      " './public/assets/js/app.js' -m -c --source-map" \
@@ -35,7 +37,7 @@ end
 
 task :criticalcss do
   require_relative 'lib/relayer'
-  puts 'Note that Relayer needs to be running on Port 9292 for this to work'
+  puts 'Note that Relayer needs to be running on Port 3000 for this to work'
   puts 'You will need to manually insert the Critical CSS'
   puts 'You run `npm install` before running this rake command'
   `rm ./public/assets/css/criticl/home.min.css`
