@@ -85,7 +85,8 @@ module Relayer
 
     # Home page (marketing page)
     get '/' do
-      slim :index, layout: false
+      redirect '/oct_segmentation'
+      # slim :index, layout: false
     end
 
     get '/oct_segmentation' do
