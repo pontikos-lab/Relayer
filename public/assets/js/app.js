@@ -84,6 +84,7 @@ if (!RL) {
 
     RL.checkFileNames = function() {
         var files = RL.fineUploader.getUploads();
+        console.log(files);
         if (files.length > 1) {
             var filenameEndings = RL.getFilenamesEndings;
             var sorted = RL.isSorted(filenameEndings);
@@ -112,53 +113,38 @@ if (!RL) {
 
     RL.produceResults = function(data) {
         $("#analysis_results").data("uuid", data.uniq_run);
-        jsonFile = 'Relayer/users/Relayer/' + data.uniq_run +
-            '/out/thickness.json';
-        RL.setImage(1);
+        jsonFile = "Relayer/users/Relayer/" + data.uniq_run + "/out/thickness.json";
+
         $.getJSON(jsonFile, function(json) {
-            RL.surfacePlot = RL.create3dSurfacePlot(json);
-            window.addEventListener('resize', function() {
+            RL.initSlider(json.length);
+            RL.surfacePlot = RL.create3dSurfacePlot(json, data.scale);
+            window.addEventListener("resize", function() {
                 Plotly.Plots.resize(RL.surfacePlot);
             });
+            RL.setImage(1);
         });
     };
 
-    RL.create3dSurfacePlot = function(z_data) {
-        var data = [{
-            z: z_data,
-            type: 'surface',
-            colorscale: [
-                ['0.0', 'rgb(0,0,0)'],
-                ['100', 'rgb(0,0,0)'],
-                ['170', 'rgb(170,0,170)'],
-                ['240', 'rgb(0,0,255)'],
-                ['300', 'rgb(0,255,0)'],
-                ['370', 'rgb(255,255,0)'],
-                ['450', 'rgb(255,0,0)'],
-                ['520', 'rgb(255,255,255)'],
-            ]
-        }];
-        var layout = {
-            title: 'Thickness (µm)',
-            scene: { zaxis: { range: [0, 600] } }
-        };
+    RL.create3dSurfacePlot = function(z_data, colourScale) {
+        console.log(colourScale);
+        var data = [{ z: z_data, type: "surface", colorscale: colourScale }];
+        var layout = { title: "Thickness (µm)", scene: { zaxis: { range: [0, 600] } } };
         var parentWidth = 100;
-        var surfacePlotNode = Plotly.d3.select('#surface_plot')
+        var surfacePlotNode = Plotly.d3
+            .select("#surface_plot")
             .style({
-                width: parentWidth + '%',
-                'margin-left': (100 - parentWidth) / 2 + '%'
+                width: parentWidth + "%",
+                "margin-left": (100 - parentWidth) / 2 + "%"
             });
         var surfacePlot = surfacePlotNode.node();
         Plotly.newPlot(surfacePlot, data, layout);
 
-        surfacePlot.on('plotly_hover', function(data) {
+        surfacePlot.on("plotly_hover", function(data) {
             var debounced_fn = _.debounce(function() {
                 var infotext = data.points.map(function(d) {
                     if (d.y !== 0) {
-                        RL.setImage(d.y);
                         var slider = document.getElementById("segmented_image_slider");
                         slider.noUiSlider.set(d.y);
-                        $("#segmented_image_number").text(val);
                     }
                 });
             }, 50);
@@ -180,7 +166,7 @@ if (!RL) {
         return (zeroes + value).slice(-padding);
     };
 
-    RL.initSlider = function() {
+    RL.initSlider = function(y_max) {
         var slider = document.getElementById("segmented_image_slider");
         noUiSlider.create(slider, {
             start: 1,
@@ -188,7 +174,7 @@ if (!RL) {
             orientation: "horizontal", // 'horizontal' or 'vertical'
             range: {
                 min: 1,
-                max: 128
+                max: y_max
             },
             format: {
                 to: function(val) {
@@ -202,31 +188,122 @@ if (!RL) {
         slider.noUiSlider.on("update", function(values, handle) {
             var debounced_fn = _.debounce(function() {
                 var val = values[handle];
-                console.log(val);
                 RL.setImage(val);
                 $("#segmented_image_number").text(val);
             }, 50);
             debounced_fn();
         });
+    };
 
+    RL.showExemplarResults = function() {
+        $("#analysis_results").show();
+        data = {
+            uniq_run: "2017-12-01_16-19-01_558-558259000",
+            scale: [
+                ["0", "rgb(52,0,230)"],
+                ["0.25", "rgb(0,56,199)"],
+                ["0.5", "rgb(0,207,48)"],
+                ["0.75", "rgb(85,255,0)"],
+                ["1", "rgb(214,255,0)"]
+            ],
+            exit_code: 0
+        };
+        RL.produceResults(data);
+    };
+
+    RL.initExemplarResultsBtn = function() {
+        $("#exemplar_output").on('click', function(e) {
+            RL.showExemplarResults();
+        });
+    };
+
+    RL.setupGoogleAuthentication = function() {
+        gapi.auth.authorize({
+            immediate: true,
+            response_type: "code",
+            cookie_policy: "single_host_origin",
+            client_id: RL.CLIENT_ID,
+            scope: "email"
+        });
+        $(".login_button").on("click", function(e) {
+            e.preventDefault();
+            /** global: gapi */
+            gapi.auth.authorize({
+                    immediate: false,
+                    response_type: "code",
+                    cookie_policy: "single_host_origin",
+                    client_id: RL.CLIENT_ID,
+                    scope: "email"
+                },
+                function(response) {
+                    if (response && !response.error) {
+                        // google authentication succeed, now post data to server.
+                        jQuery.ajax({
+                            type: "POST",
+                            url: "/auth/google_oauth2/callback",
+                            data: response,
+                            success: function() {
+                                // TODO - just update the DOM instead of a redirect
+                                $(location).attr(
+                                    "href",
+                                    RL.protocol() + window.location.host + "/oct_segmentation"
+                                );
+                            }
+                        });
+                    } else {
+                        console.log("ERROR Response google authentication failed");
+                        // TODO: ERROR Response google authentication failed
+                    }
+                }
+            );
+        });
+    };
+
+    RL.protocol = function() {
+        if (RL.USING_SLL === "true") {
+            return "https://";
+        } else {
+            return "http://";
+        }
+    };
+
+    RL.addUserDropDown = function() {
+        $(".dropdown-button").dropdown({
+            inDuration: 300,
+            outDuration: 225,
+            hover: true,
+            belowOrigin: true,
+            alignment: "right"
+        });
     };
 
     RL.round = function(value, decimals) {
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
-    }
-
+    };
 }());
 
 (function($) {
     $(function() {
         RL.initFineUploader();
         RL.initSubmit();
-        RL.initSlider();
         $('#loading_modal').modal({ dismissible: false });
+        $('.modal').modal();
         $("select").material_select();
-        $("#analysis_results").show();
-        data = { uniq_run: "2017-11-26_19-25-20_585-585304000" };
-        RL.produceResults(data);
-
+        $(".button-collapse").sideNav();
+        RL.initExemplarResultsBtn();
+        RL.addUserDropDown();
     });
+
+    $(function() {
+        return $.ajax({
+            url: "https://apis.google.com/js/client:plus.js?onload=gpAsyncInit",
+            dataType: "script",
+            cache: true
+        });
+    });
+
+    window.gpAsyncInit = function() {
+        RL.setupGoogleAuthentication();
+    };
+
 })(jQuery);
