@@ -27,6 +27,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sass', '~>3.5'
   spec.add_development_dependency 'w3c_validators', '~>1.1'
 
+  spec.add_dependency 'awesome_print', '~>1.8'
+  spec.add_dependency 'omniauth', '~>1.6'
+  spec.add_dependency 'omniauth-google-oauth2', '~>0.5'
   spec.add_dependency 'passenger', '~>5.1'
   spec.add_dependency 'pry', '~>0.11'
   spec.add_dependency 'sinatra', '~>2.0'
