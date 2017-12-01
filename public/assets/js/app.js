@@ -28,7 +28,7 @@ if (!RL) {
                 }
             },
             validation: {
-                allowedExtensions: ['jpeg', 'jpg', 'h5'],
+                allowedExtensions: ['jpeg', 'jpg', 'tif', 'h5'],
                 itemLimit: 500,
                 sizeLimit: 78650000 // 75MB
             },
