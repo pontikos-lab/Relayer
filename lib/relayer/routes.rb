@@ -93,6 +93,17 @@ module Relayer
       slim :oct_segmentation, layout: :app_layout
     end
 
+    # TODO
+    get '/my_results' do
+      # redirect to('auth/google_oauth2') if session[:user].nil?
+      slim :index, layout: false
+    end
+
+    # TODO
+    get '/faq' do
+      slim :index, layout: false
+    end
+
     # Run the Relayer Analysis
     post '/oct_segmentation' do
       u = 'Relayer'
