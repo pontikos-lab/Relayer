@@ -182,3 +182,9 @@ p#disclaimer {
     z-index: 1;
     will-change: width, height;
 }
+
+#analysis_container {
+    .dropdown-content.select-dropdown {
+        z-index: 999;
+    }
+}
