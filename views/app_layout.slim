@@ -26,11 +26,11 @@ html lang="en"
         a#logo-container.brand-logo.white-text.hide-on-large-only href="#{request.base_url}"
           | &nbsp;RELAYER
         ul.hide-on-med-and-down.navbar_centered
-          li class=('active' if uri =~ %r{/analyse} )
-            a.white-text href="#{request.base_url}/analyse"  Analyse
+          li class=('active' if uri =~ %r{oct_segmentation} )
+            a.white-text href="#{request.base_url}oct_segmentation"  Analyse
           li class=('active' if uri =~ %r{/my_results} )
             - if session[:user].nil?
-              a.white-text href="#login_modal"  My Results
+              a.white-text.modal-trigger href="#login_modal"  My Results
             - else
               a.white-text href="#{request.base_url}/my_results"  My Results
         ul#dropdown_menu.right.hide-on-med-and-down
@@ -51,7 +51,7 @@ html lang="en"
             i.material-icons.white-text menu
         ul#nav-mobile.side-nav
           li
-            a href="#{request.base_url}/analyse"  Analyse
+            a href="#{request.base_url}oct_segmentation"  Analyse
           li
             a href="#{request.base_url}/my_results"  My Results
           - if ! session[:user].nil?
@@ -81,6 +81,14 @@ html lang="en"
       li#logout.collection-item.avatar onclick="location.href='#{request.base_url}/logout';"
         i.material-icons.circle.light-blue.accent-3  power_settings_new
         span.title Log Out
+
+    #login_modal.modal
+      .modal-content
+        h4 Please login to see the results of your previous analyses
+        p  We need to know who you are in order to show you the results of your previous analyses. Please click on the button below in order to login using your Google account.
+      .modal-footer
+        a.modal-action.modal-close.waves-effect.waves-red.btn-flat.left href="#!"   Cancel
+        a.login_button.waves-effect.waves-green.btn-flat  Login
 
     script src="https://code.jquery.com/jquery-3.2.1.min.js"
     script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"
@@ -130,3 +138,13 @@ html lang="en"
       script src="#{uri('assets/js/underscore.js')}"
       script src="#{uri('assets/js/nouislider.js')}"
       script src="#{uri('assets/js/app.js')}"
+    javascript:
+      RL.CLIENT_ID = "#{ENV['GOOGLE_KEY']}"
+      RL.USING_SLL = "#{Relayer.ssl?}"
+      $(function() {
+        return $.ajax({
+          url: 'https://apis.google.com/js/client:plus.js?onload=gpAsyncInit',
+          dataType: 'script',
+          cache: true
+        });
+      });
