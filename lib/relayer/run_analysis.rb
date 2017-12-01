@@ -27,15 +27,15 @@ module Relayer
       extend Forwardable
 
       def_delegators Relayer, :config, :logger, :relayer_dir,
-                     :public_dir, :users_dir, :tmp_dir
+                     :public_dir, :users_dir, :tmp_dir, :colour_map
 
       # Runs the matlab analysis
       def run(params, user)
         init(params, user)
         run_matlab
         Thread.new { compress_output_dir(@run_dir, @run_out_dir) }
-        { uniq_run: @uniq_time, exit_code: @matlab_exit_code, 
-          files: generate_file_list }
+        { uniq_run: @uniq_time, exit_code: @matlab_exit_code,
+          files: generate_file_list, scale: generate_colour_scale }
       end
 
       private
@@ -114,11 +114,10 @@ module Relayer
       end
 
       # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
-      def matlab_cmd(input_file)
+      def matlab_cmd(input)
         "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop -r \" " \
         "addpath(genpath('#{config[:oct_library_path]}'));" \
-        "[octVolume, ~] = readOCTvolumeMEH('#{input_file}');" \
-        '[~,~,~,thickness] = processVolumeRELAYER(octVolume,'\
+        "[~,~,~,thickness] = processVolumeRELAYER('#{input}',"\
         " #{@params['machine_type']}, '#{@run_out_dir}');" \
         "fileID = fopen('#{File.join(@run_out_dir, 'thickness.json')}','w');" \
         'fprintf(fileID, jsonencode(round(thickness, 2)));' \
@@ -133,7 +132,30 @@ module Relayer
       end
 
       def generate_file_list
-        Dir.enteries("#{@run_out_dir}/*.jpg")
+        Dir.glob("#{@run_out_dir}/*.jpg")
+      end
+
+      def generate_colour_scale
+        file = IO.read(File.join(@run_out_dir, 'thickness.json'))
+        data = JSON.parse(file)
+        max = data.flatten!.max
+        min = data.min
+        q2 = (min + max) / 2
+        q1 = (min + q2) / 2
+        q3 = (max + q2) / 2
+        p [min, q1, q2, q3, max]
+        [
+          ['0', raw_val_to_colour(min)],
+          ['0.25', raw_val_to_colour(q1)],
+          ['0.5', raw_val_to_colour(q2)],
+          ['0.75', raw_val_to_colour(q3)],
+          ['1', raw_val_to_colour(max)]
+        ]
+      end
+
+      def raw_val_to_colour(val)
+        v = val.round
+        'rgb(' + colour_map[v] + ')'
       end
     end
   end

@@ -1,5 +1,6 @@
-require 'yaml'
 require 'fileutils'
+require 'json'
+require 'yaml'
 
 require 'relayer/config'
 require 'relayer/exceptions'
@@ -44,6 +45,7 @@ module Relayer
 
       set_up_default_user_dir
       check_num_threads
+      @colour_map = init_colour_map
 
       self
     end
@@ -53,7 +55,7 @@ module Relayer
     # users_dir   = $HOME/.relayer/users/
     # tmp_dir     = $HOME/.relayer/tmp/
     attr_reader :config, :relayer_dir, :public_dir, :users_dir,
-                :tmp_dir
+                :tmp_dir, :colour_map
 
     # Starting the app manually
     def run
@@ -188,6 +190,11 @@ module Relayer
 
     def xdg?
       true if ENV['DISPLAY'] && system('which xdg-open > /dev/null 2>&1')
+    end
+
+    def init_colour_map
+      file = IO.read(File.join(@public_dir, 'assets/colourMap.json'))
+      JSON.parse(file)
     end
   end
 end
