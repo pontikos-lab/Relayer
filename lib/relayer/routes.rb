@@ -1,6 +1,8 @@
 require 'base64'
 require 'English'
 require 'json'
+require 'omniauth'
+require 'omniauth-google-oauth2'
 require 'sinatra/base'
 require 'slim'
 require 'slim/smart'
@@ -34,6 +36,12 @@ module Relayer
 
       # Use Rack::Session::Pool over Sinatra default sessions.
       use Rack::Session::Pool, expire_after: 2_592_000 # 30 days
+
+      # Provide OmniAuth the Google Key and Secret Key for Authentication
+      use OmniAuth::Builder do
+        provider :google_oauth2, ENV['GOOGLE_KEY'], ENV['GOOGLE_SECRET'],
+                 provider_ignores_state: true, verify_iss: false
+      end
 
       # view directory will be found here.
       set :root, -> { Relayer.root }
@@ -112,6 +120,46 @@ module Relayer
         { success: false }.to_json
       end
     end
+
+    get '/auth/:provider/callback' do
+      content_type 'text/plain'
+      session[:user] = env['omniauth.auth']
+      user_dir    = File.join(Relayer.users_dir, session[:user].info['email'])
+      user_public = File.join(Relayer.public_dir, 'Relayer/Users')
+      FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
+      unless File.exist? File.join(user_public, session[:user].info['email'])
+        FileUtils.ln_s(user_dir, user_public)
+      end
+      redirect '/oct_segmentation'
+    end
+
+    post '/auth/:provider/callback' do
+      content_type :json
+      session[:user] = env['omniauth.auth']
+      user_dir    = File.join(Relayer.users_dir, session[:user].info['email'])
+      user_public = File.join(Relayer.public_dir, 'Relayer/Users')
+      FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
+      unless File.exist? File.join(user_public, session[:user].info['email'])
+        FileUtils.ln_s(user_dir, user_public)
+      end
+      env['omniauth.auth'].to_json
+    end
+
+    get '/logout' do
+      user_public_dir = File.join(Relayer.public_dir, 'Relayer/Users',
+                                  session[:user].info['email'])
+      FileUtils.rm(user_public_dir)
+      session[:user] = nil
+      redirect '/oct_segmentation'
+    end
+
+    get '/auth/failure' do
+      redirect '/oct_segmentation'
+    end
+
+    # Recaptcha
+    # https://stackoverflow.com/questions/21262254/what-captcha-for-sinatra
+    #
 
     # This error block will only ever be hit if the user gives us a funny
     # parameter. Well, we could hit this block if someone is playing around
