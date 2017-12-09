@@ -7,6 +7,7 @@ require 'sinatra/base'
 require 'slim'
 require 'slim/smart'
 
+require 'relayer/history'
 require 'relayer/run_analysis'
 require 'relayer/version'
 
@@ -93,21 +94,50 @@ module Relayer
       slim :oct_segmentation, layout: :app_layout
     end
 
-    # TODO
     get '/my_results' do
-      # redirect to('auth/google_oauth2') if session[:user].nil?
-      slim :index, layout: false
+      redirect to('auth/google_oauth2') if session[:user].nil?
+      slim :work_in_progress, layout: false
+      # @my_results = History.run(session[:user].info['email'])
+      # slim :my_results, layout: :app_layout
     end
 
-    # TODO
+    # # Individual Result Pages
+    # get '/result/:encoded_email/:time' do
+    #   email = Base64.decode64(params[:encoded_email])
+    #   if session[:user].nil? && email != 'relayer'
+    #     redirect to('auth/google_oauth2')
+    #   end
+    #   json_file = File.join(Relayer.public_dir, 'Relayer/Users/', email,
+    #                         params['time'], 'params.json')
+    #   @results  = JSON.parse(IO.read(json_file))
+    #   slim :single_results, layout: :app_layout
+    # end
+
+    # # Shared Result Pages (Can be viewed without logging in)
+    # get '/sh/:encoded_email/:time' do
+    #   email     = Base64.decode64(params[:encoded_email])
+    #   json_file = File.join(Relayer.public_dir, 'Relayer/Share/', email,
+    #                         params['time'], 'params.json')
+    #   @results  = JSON.parse(IO.read(json_file))
+    #   slim :single_results, layout: :app_layout
+    # end
+
+    # get '/exemplar_results' do
+    #   exemplar_results = Relayer.exemplar_results
+    #   json_file = File.join(Relayer.public_dir, 'Relayer/Users/',
+    #                         exemplar_results, 'params.json')
+    #   @results  = JSON.parse(IO.read(json_file))
+    #   slim :single_results, layout: :app_layout
+    # end
+
     get '/faq' do
-      slim :index, layout: false
+      slim :work_in_progress, layout: :app_layout
     end
 
     # Run the Relayer Analysis
     post '/oct_segmentation' do
       email = Base64.decode64(params[:user])
-      RelayerAnalysis.run(params, email).to_json
+      RelayerAnalysis.run(params, email, base_url).to_json
     end
 
     post '/upload' do
@@ -132,6 +162,34 @@ module Relayer
         { success: false }.to_json
       end
     end
+
+    # Create a share link for a result page
+    # post '/sh/:encoded_email/:time' do
+    #   email    = Base64.decode64(params[:encoded_email])
+    #   analysis = File.join(Relayer.users_dir, email, params['time'])
+    #   share    = File.join(Relayer.public_dir, 'Relayer/Share', email)
+    #   FileUtils.mkdir_p(share) unless File.exist? share
+    #   FileUtils.cp_r(analysis, share)
+    #   share_file = File.join(analysis, '.share')
+    #   FileUtils.touch(share_file) unless File.exist? share_file
+    # end
+
+    # Remove a share link of a result page
+    # post '/rm/:encoded_email/:time' do
+    #   email = Base64.decode64(params[:encoded_email])
+    #   share = File.join(Relayer.public_dir, 'Relayer/Share', email, 
+    #                     params['time'])
+    #   FileUtils.rm_r(share) if File.exist? share
+    #   share_file = File.join(Relayer.users_dir, email, params['time'], '.share')
+    #   FileUtils.rm(share_file) if File.exist? share_file
+    # end
+
+    # # Delete a Results Page
+    # post '/delete_result' do
+    #   email = session[:user].nil? ? 'relayer' : session[:user].info['email']
+    #   @results_url = File.join(Relayer.users_dir, email, params['result_time'])
+    #   FileUtils.rm_r @results_url if Dir.exist? @results_url
+    # end
 
     get '/auth/:provider/callback' do
       content_type 'text/plain'

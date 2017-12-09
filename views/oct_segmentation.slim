@@ -9,7 +9,7 @@
         .file_space#fine-uploader-validation
         form#oct_segmentation_analysis
           - if session[:user].nil?
-            input type="hidden" name="user" value="#{Base64.encode64('Relayer').chomp}"
+            input type="hidden" name="user" value="#{Base64.encode64('relayer').chomp}"
           - else
             input type="hidden" name="user" value="#{Base64.encode64(session[:user].info['email']).chomp}"
           .row

@@ -285,14 +285,14 @@ if (!RL) {
 
 (function($) {
     $(function() {
-        RL.initFineUploader();
-        RL.initSubmit();
-        $('#loading_modal').modal({ dismissible: false });
         $('.modal').modal();
+        $('#loading_modal').modal({ dismissible: false });
         $("select").material_select();
         $(".button-collapse").sideNav();
         RL.initExemplarResultsBtn();
         RL.addUserDropDown();
+        RL.initSubmit();
+        RL.initFineUploader();
     });
 
     $(function() {
@@ -306,5 +306,4 @@ if (!RL) {
     window.gpAsyncInit = function() {
         RL.setupGoogleAuthentication();
     };
-
 })(jQuery);

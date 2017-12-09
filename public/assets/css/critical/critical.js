@@ -31,7 +31,7 @@ critical.generate({
     dest: "public/assets/css/critical/app.min.css",
     dimensions: dimensions,
     ignore: [/url\(/, "@font-face", /print/],
-    include: ["qq-uploader-selector", 'drop_zone_container'],
+    include: ["qq-uploader-selector", "drop_zone_container", "profile_img"],
     timeout: 300000,
     minify: true
 });
