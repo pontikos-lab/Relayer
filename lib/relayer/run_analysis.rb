@@ -101,6 +101,9 @@ module Relayer
 
       def run_matlab
         input_file = file_names
+        IO.open(File.join(@run_out_dir, 'cmd.txt')) do |f|
+          f.puts matlab_cmd(input_file)
+        end
         logger.debug("Running CMD: #{matlab_cmd(input_file)}")
         system(matlab_cmd(input_file))
         @matlab_exit_code = $CHILD_STATUS.exitstatus
@@ -113,16 +116,28 @@ module Relayer
         @run_files_dir
       end
 
-      # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
       def matlab_cmd(input)
-        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop -r \" " \
-        "addpath(genpath('#{config[:oct_library_path]}'));" \
-        "[~,~,~,thickness] = processVolumeRELAYER('#{input}',"\
-        " #{@params['machine_type']}, '#{@run_out_dir}');" \
-        "fileID = fopen('#{File.join(@run_out_dir, 'thickness.json')}','w');" \
-        'fprintf(fileID, jsonencode(round(thickness, 2)));' \
-        'fclose(fileID);' \
-        'exit;"'
+        generate_matlab_script(input)
+        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop -r " \
+        "#{File.join(@run_out_dir, 'analysis')}"
+      end
+
+      def generate_matlab_script(input)
+        File.open(File.join(@run_out_dir, 'analysis.m'), 'w') do |io|
+          thickness_json = File.join(@run_out_dir, 'thickness.json')
+          matlab_code(io, input, thickness_json)
+        end
+      end
+
+      # processVolumeRELAYER(octVolume, machineCode, folder, verbose)
+      def matlab_code(io, input, thickness_json)
+        io.puts "addpath(genpath('#{config[:oct_library_path]}'));"
+        io.puts "[~,~,~,thickness] = processVolumeRELAYER('#{input}',"\
+                " #{@params['machine_type']}, '#{@run_out_dir}');"
+        io.puts "fileID = fopen('#{thickness_json}','w');"
+        io.puts 'fprintf(fileID, jsonencode(round(thickness, 2)));'
+        io.puts 'fclose(fileID);'
+        io.puts 'exit;'
       end
 
       def compress_output_dir(run_dir, run_out_dir)
