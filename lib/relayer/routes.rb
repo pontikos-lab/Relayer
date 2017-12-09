@@ -106,8 +106,8 @@ module Relayer
 
     # Run the Relayer Analysis
     post '/oct_segmentation' do
-      u = 'Relayer'
-      RelayerAnalysis.run(params, u).to_json
+      email = Base64.decode64(params[:user])
+      RelayerAnalysis.run(params, email).to_json
     end
 
     post '/upload' do

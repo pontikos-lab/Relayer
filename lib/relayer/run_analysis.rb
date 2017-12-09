@@ -136,14 +136,12 @@ module Relayer
       end
 
       def generate_colour_scale
-        file = IO.read(File.join(@run_out_dir, 'thickness.json'))
-        data = JSON.parse(file)
+        data = JSON.parse(IO.read(File.join(@run_out_dir, 'thickness.json')))
         max = data.flatten!.max
         min = data.min
-        q2 = (min + max) / 2
-        q1 = (min + q2) / 2
-        q3 = (max + q2) / 2
-        p [min, q1, q2, q3, max]
+        q2 = ((min + max) / 2)
+        q1 = ((min + q2) / 2)
+        q3 = ((max + q2) / 2)
         [
           ['0', raw_val_to_colour(min)],
           ['0.25', raw_val_to_colour(q1)],

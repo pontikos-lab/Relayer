@@ -8,6 +8,10 @@
         p.lead Drop a series of numbered images here (with the filenames numbered file001.jpg, file002.jpg etc.).
         .file_space#fine-uploader-validation
         form#oct_segmentation_analysis
+          - if session[:user].nil?
+            input type="hidden" name="user" value="#{Base64.encode64('geodiver').chomp}"
+          - else
+            input type="hidden" name="user" value="#{Base64.encode64(session[:user].info['email']).chomp}"
           .row
             .input-field.col.s6
               select name="machine_type" 
@@ -17,10 +21,10 @@
                 option value="2"
                   | TOPCON "3D-OCT 2000"
               label Machine Type
-        a.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3.modal-trigger href="#beta_modal"
+        / a.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3.modal-trigger href="#beta_modal"
           i.material-icons.right style="max-width: 20px" cloud 
           | Analyse        
-        / a#analysis_btn.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3
+        a#analysis_btn.waves-effect.waves-light.btn.btn-large.right.cyan.darken-3
           i.material-icons.right cloud
           | Analyse
         a.exemplar_output.waves-effect.waves-light.btn.left.cyan.darken-3

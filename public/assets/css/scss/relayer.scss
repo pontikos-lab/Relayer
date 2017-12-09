@@ -155,6 +155,15 @@ p#disclaimer {
     margin-bottom: 10px !important;
 }
 
+.collection .collection-item.avatar {
+    min-height: 62px;
+    .title {
+        line-height: 42px;
+        font-size: 17px;
+        padding: 0;
+    }
+}
+
 .multiple-select-dropdown,
 .select-dropdown {
     overflow-y: scroll !important;
