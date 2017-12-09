@@ -101,9 +101,6 @@ module Relayer
 
       def run_matlab
         input_file = file_names
-        IO.open(File.join(@run_out_dir, 'cmd.txt')) do |f|
-          f.puts matlab_cmd(input_file)
-        end
         logger.debug("Running CMD: #{matlab_cmd(input_file)}")
         system(matlab_cmd(input_file))
         @matlab_exit_code = $CHILD_STATUS.exitstatus
