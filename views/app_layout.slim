@@ -40,7 +40,7 @@ html lang="en"
               a.white-text.dropdown-button href="#!" data-activates="user_menu_dropdown" data-beloworigin="true"
                 span#name.left
                   | #{session[:user].info['first_name']}
-                img.circle.profile_img.right alt="Profile Picture" src="#{session[:user].info['image']}"/
+                img.circle.profile_img.right alt="Profile Picture" style="height: 45px;" src="#{session[:user].info['image']}"/ 
                 .clearfix
           - else
             li
