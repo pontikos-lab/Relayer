@@ -132,7 +132,7 @@ module Relayer
         FileUtils.rm_rf(assets) unless File.symlink?(assets)
         FileUtils.ln_s(root_assets, @public_dir) unless File.exist?(assets)
       else
-        FileUtils.rm_rf(assets) if File.symlink?(assets) || !File.exist(css)
+        FileUtils.rm_rf(assets) if File.symlink?(assets) || !File.exist?(css)
         FileUtils.cp_r(root_assets, @public_dir) unless File.exist?(assets)
       end
       init_public_data_dirs(@public_dir)
