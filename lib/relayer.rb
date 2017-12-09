@@ -127,7 +127,7 @@ module Relayer
       FileUtils.mkdir_p @public_dir unless Dir.exist?(@public_dir)
       root_assets = File.join(Relayer.root, 'public/assets')
       assets = File.join(@public_dir, 'assets')
-      css = File.join(assets, 'css', "style-#{Relayer.version}.min.css")
+      css = File.join(assets, 'css', "style-#{Relayer::VERSION}.min.css")
       if environment == 'development'
         FileUtils.rm_rf(assets) unless File.symlink?(assets)
         FileUtils.ln_s(root_assets, @public_dir) unless File.exist?(assets)
