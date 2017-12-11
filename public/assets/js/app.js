@@ -112,8 +112,8 @@ if (!RL) {
     };
 
     RL.produceResults = function(data) {
-        $("#analysis_results").data("uuid", data.uniq_run);
-        jsonFile = "Relayer/users/Relayer/" + data.uniq_run + "/out/thickness.json";
+        $("#analysis_results").data("assets_path", data.assets_path);
+        jsonFile = data.assets_path + "/out/thickness.json";
 
         $.getJSON(jsonFile, function(json) {
             RL.initSlider(json.length);
@@ -154,8 +154,8 @@ if (!RL) {
     };
 
     RL.setImage = function(i) {
-        var uuid = $("#analysis_results").data('uuid');
-        var url = "/Relayer/users/Relayer/" + uuid + "/out/" + RL.lpad(i) + ".jpg";
+        var assets_path = $("#analysis_results").data("assets_path");
+        var url = assets_path + "/out/" + RL.lpad(i) + ".jpg";
         $("#segmented_image").attr('src', url);
     };
 
@@ -198,13 +198,13 @@ if (!RL) {
     RL.showExemplarResults = function() {
         $("#analysis_results").show();
         data = {
-            uniq_run: "2017-12-01_16-19-01_558-558259000",
+            assets_path: "/relayer/users/relayer/2017-12-11_22-00-28_161-161900000",
             scale: [
-                ["0", "rgb(52,0,230)"],
-                ["0.25", "rgb(0,56,199)"],
-                ["0.5", "rgb(0,207,48)"],
-                ["0.75", "rgb(85,255,0)"],
-                ["1", "rgb(214,255,0)"]
+                ["0", "rgb(140,0,186)"],
+                ["0.25", "rgb(39,0,236)"],
+                ["0.5", "rgb(0,104,151)"],
+                ["0.75", "rgb(18,255,0)"],
+                ["1", "rgb(170,255,0)"]
             ],
             exit_code: 0
         };
@@ -214,7 +214,11 @@ if (!RL) {
     RL.initExemplarResultsBtn = function() {
         $(".exemplar_output").on('click', function(e) {
             $("#beta_modal").modal('close');
+            $("#loading_modal").modal("open");
             RL.showExemplarResults();
+            $("#analysis_results").imagesLoaded().then(function() {
+                $("#loading_modal").modal("close");
+            });
         });
     };
 
@@ -284,15 +288,41 @@ if (!RL) {
 }());
 
 (function($) {
+    // Fn to allow an event to fire after all images are loaded
+    $.fn.imagesLoaded = function() {
+        var $imgs = this.find('img[src!=""]');
+        // if there's no images, just return an already resolved promise
+        if (!$imgs.length) {
+            return $.Deferred()
+                .resolve()
+                .promise();
+        }
+
+        // for each image, add a deferred object to the array which resolves when the image is loaded (or if loading fails)
+        var dfds = [];
+        $imgs.each(function() {
+            var dfd = $.Deferred();
+            dfds.push(dfd);
+            /** global: Image */
+            var img = new Image();
+            img.onload = function() {
+                dfd.resolve();
+            };
+            img.onerror = function() {
+                dfd.resolve();
+            };
+            img.src = this.src;
+        });
+        // return a master promise object which will resolve when all the deferred objects have resolved
+        // i.e. - when all the images are loaded
+        return $.when.apply($, dfds);
+    };
+
     $(function() {
-        $('.modal').modal();
-        $('#loading_modal').modal({ dismissible: false });
+        $(".modal").modal();
         $("select").material_select();
         $(".button-collapse").sideNav();
-        RL.initExemplarResultsBtn();
         RL.addUserDropDown();
-        RL.initSubmit();
-        RL.initFineUploader();
     });
 
     $(function() {

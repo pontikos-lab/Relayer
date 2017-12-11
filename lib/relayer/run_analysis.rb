@@ -2,8 +2,6 @@ require 'English'
 require 'forwardable'
 require 'json'
 
-require 'relayer/pool'
-
 # Relayer NameSpace
 module Relayer
   # Module to run the OCT Segmentation analysis
@@ -33,10 +31,12 @@ module Relayer
       def run(params, user, url)
         init(params, user)
         run_matlab
-        Thread.new { compress_output_dir(@run_dir, @run_out_dir) }
+        if @matlab_exit_code != 0
+          Thread.new { compress_output_dir(@run_dir, @run_out_dir) }
+        end
         write_results_to_file(url)
-        { uniq_run: @uniq_time, exit_code: @matlab_exit_code,
-          files: generate_file_list, scale: generate_colour_scale }
+        { exit_code: @matlab_exit_code, scale: @colour_scale,
+          assets_path: "/relayer/users/#{@email}/#{@uniq_time}" }
       end
 
       private
@@ -65,11 +65,10 @@ module Relayer
       end
 
       def assert_files_exists
-        r = @params[:files].collect do |f|
-          puts f
+        files = @params[:files].collect do |f|
           File.exist?(File.join(tmp_dir, f[:uuid], f[:originalName]))
         end
-        r.uniq
+        files.uniq
       end
 
       def setup_run_dir
@@ -99,6 +98,7 @@ module Relayer
         system(matlab_cmd(input_file))
         @matlab_exit_code = $CHILD_STATUS.exitstatus
         logger.debug("Matlab CMD Exit Code: #{@matlab_exit_code}")
+        @colour_scale = generate_colour_scale
       end
 
       def file_names
@@ -109,8 +109,8 @@ module Relayer
 
       def matlab_cmd(input)
         generate_matlab_script(input)
-        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop -r " \
-        "#{File.join(@run_out_dir, 'analysis')}"
+        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop" \
+        " -sd '#{@run_out_dir}' -r analysis"
       end
 
       def generate_matlab_script(input)
@@ -137,11 +137,8 @@ module Relayer
         system(cmd)
       end
 
-      def generate_file_list
-        Dir.glob("#{@run_out_dir}/*.jpg")
-      end
-
       def generate_colour_scale
+        return [] unless File.exist? File.join(@run_out_dir, 'thickness.json')
         data = JSON.parse(IO.read(File.join(@run_out_dir, 'thickness.json')))
         values = quartiles(data)
         [
@@ -179,12 +176,11 @@ module Relayer
           user: encode_email,
           results_url: "#{url}/result/#{encode_email}/#{@uniq_time}",
           share_url: "#{url}/sh/#{encode_email}/#{@uniq_time}",
-          assets_path: "#{url}/Relayer/Users/#{@email}/#{@uniq_time}",
+          assets_path: "#{url}/relayer/users/#{@email}/#{@uniq_time}",
           full_path: @run_dir,
           uniq_result_id: @uniq_time,
           exit_code: @matlab_exit_code,
-          files: generate_file_list,
-          scale: generate_colour_scale
+          scale: @colour_scale
         }
       end
 

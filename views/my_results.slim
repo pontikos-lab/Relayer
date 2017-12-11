@@ -1,0 +1,38 @@
+#analysis_container.container
+  .section
+    h1.header.cyan-text.text-darken-4  My Results
+    - if @my_results.nil?
+      p
+        | It seems you haven't run any analyses yet - Please click 
+        a href="/oct_segmentation" here
+        | to run your first analysis. If you have previously ran analyses, we can only save them, if you are logged in as you.
+    - else 
+      .row
+        - @my_results.each do |result|
+          .col.s12.m6
+            .card.hoverable data-user="#{result['user']}" data-result="#{result['uniq_result_id']}" data-share-link="#{result['share_url']}" data-results-link="#{result['results_url']}"
+              .card-content.cyan.darken-3 style="padding:1rem; text-align:left;cursor:pointer;" onclick="location.href='#{result['results_url']}'"
+                span.card-title.white-text
+                  | #{result['run_time']}
+                br
+                span.grey-text.text-lighten-3 style="padding-left:10px;"
+                  | Run Time: #{result['run_time'].strftime("%H:%M %d/%m/%Y")}
+              .card-action style="padding:0;"
+                .actions.right style=" display: -webkit-flex; margin-left: auto; padding: 10px 0;"
+                  a#download-all-results.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 data-download="#{result['results_download_url']}" style="min-width:36px;padding:0 8px;margin-right:0px"
+                    i.material-icons  file_download
+                  a#delete_results.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 style="min-width:36px;padding:0 8px;margin-right:0px"
+                    i.material-icons  delete
+                  - if result['share']
+                    a#share_the_link_btn.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 style="min-width:36px;padding:0 8px;margin-right:0px"
+                      i.material-icons  link
+                    a#share_btn.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 style="min-width:36px;padding:0 8px;margin-right:0px; display:none;"
+                      i.material-icons  share
+                  - else
+                    a#share_the_link_btn.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 style="min-width:36px;padding:0 8px;margin-right:0px; display:none;"
+                      i.material-icons  link
+                    a#share_btn.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 style="min-width:36px;padding:0 8px;margin-right:0px"
+                      i.material-icons  share
+                  a.waves-effect.btn-flat.nopadding.light-blue-text.text-darken-3 style="min-width:36px;padding:0 8px;margin-right:0px" href="#{result['results_url']}"
+                    i.material-icons  open_in_new
+              .clearfix

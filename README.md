@@ -12,7 +12,7 @@ Feel free to give us a shout on the github issues, if you would like more help t
 
 * Ruby (>= 2.2.0)
   * Recommended to use [rvm](https://rvm.io/rvm/install) to install ruby
-* Matlab (=2016b)
+* Matlab (=2017a)
   * Installation from [here](https://www.mathworks.com/products/matlab.html)
     * The location of the matlab binary is reqiured
 
@@ -68,7 +68,7 @@ To configure and launch relayer, run the following from a command line from the 
 bundle exec passenger start -h
 ```
 
-That's it! Open [http://localhost:9292/](http://localhost:9292/) and start using relayer!
+That's it! Open [http://localhost:3000/](http://localhost:3000/) and start using relayer!
 
 ## Advanced Usage
 
@@ -81,7 +81,7 @@ A Config file can be used to specify arguments - the default location of this fi
 ```yaml
 ---
 :num_threads: 8
-:port: 9292
+:port: 3000
 :host: 0.0.0.0
 :relayer_dir: "/Users/ismailm/.relayer"
 :ssl: false

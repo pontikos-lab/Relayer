@@ -95,10 +95,11 @@ module Relayer
     end
 
     get '/my_results' do
-      redirect to('auth/google_oauth2') if session[:user].nil?
-      slim :work_in_progress, layout: :app_layout
-      # @my_results = History.run(session[:user].info['email'])
-      # slim :my_results, layout: :app_layout
+      # redirect to('auth/google_oauth2') if session[:user].nil?
+      # slim :work_in_progress, layout: :app_layout
+      e = session[:user].nil? ? 'relayer' : session[:user].info['email']
+      @my_results = History.run(e)
+      slim :my_results, layout: :app_layout
     end
 
     # # Individual Result Pages
@@ -107,7 +108,7 @@ module Relayer
     #   if session[:user].nil? && email != 'relayer'
     #     redirect to('auth/google_oauth2')
     #   end
-    #   json_file = File.join(Relayer.public_dir, 'Relayer/Users/', email,
+    #   json_file = File.join(Relayer.public_dir, 'relayer/users/', email,
     #                         params['time'], 'params.json')
     #   @results  = JSON.parse(IO.read(json_file))
     #   slim :single_results, layout: :app_layout
@@ -116,7 +117,7 @@ module Relayer
     # # Shared Result Pages (Can be viewed without logging in)
     # get '/sh/:encoded_email/:time' do
     #   email     = Base64.decode64(params[:encoded_email])
-    #   json_file = File.join(Relayer.public_dir, 'Relayer/Share/', email,
+    #   json_file = File.join(Relayer.public_dir, 'relayer/share/', email,
     #                         params['time'], 'params.json')
     #   @results  = JSON.parse(IO.read(json_file))
     #   slim :single_results, layout: :app_layout
@@ -124,7 +125,7 @@ module Relayer
 
     # get '/exemplar_results' do
     #   exemplar_results = Relayer.exemplar_results
-    #   json_file = File.join(Relayer.public_dir, 'Relayer/Users/',
+    #   json_file = File.join(Relayer.public_dir, 'relayer/users/',
     #                         exemplar_results, 'params.json')
     #   @results  = JSON.parse(IO.read(json_file))
     #   slim :single_results, layout: :app_layout
@@ -167,7 +168,7 @@ module Relayer
     # post '/sh/:encoded_email/:time' do
     #   email    = Base64.decode64(params[:encoded_email])
     #   analysis = File.join(Relayer.users_dir, email, params['time'])
-    #   share    = File.join(Relayer.public_dir, 'Relayer/Share', email)
+    #   share    = File.join(Relayer.public_dir, 'relayer/share', email)
     #   FileUtils.mkdir_p(share) unless File.exist? share
     #   FileUtils.cp_r(analysis, share)
     #   share_file = File.join(analysis, '.share')
@@ -177,7 +178,7 @@ module Relayer
     # Remove a share link of a result page
     # post '/rm/:encoded_email/:time' do
     #   email = Base64.decode64(params[:encoded_email])
-    #   share = File.join(Relayer.public_dir, 'Relayer/Share', email, 
+    #   share = File.join(Relayer.public_dir, 'relayer/share', email,
     #                     params['time'])
     #   FileUtils.rm_r(share) if File.exist? share
     #   share_file = File.join(Relayer.users_dir, email, params['time'], '.share')
@@ -195,7 +196,7 @@ module Relayer
       content_type 'text/plain'
       session[:user] = env['omniauth.auth']
       user_dir    = File.join(Relayer.users_dir, session[:user].info['email'])
-      user_public = File.join(Relayer.public_dir, 'Relayer/Users')
+      user_public = File.join(Relayer.public_dir, 'relayer/users')
       FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
       unless File.exist? File.join(user_public, session[:user].info['email'])
         FileUtils.ln_s(user_dir, user_public)
@@ -207,7 +208,7 @@ module Relayer
       content_type :json
       session[:user] = env['omniauth.auth']
       user_dir    = File.join(Relayer.users_dir, session[:user].info['email'])
-      user_public = File.join(Relayer.public_dir, 'Relayer/Users')
+      user_public = File.join(Relayer.public_dir, 'relayer/users')
       FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
       unless File.exist? File.join(user_public, session[:user].info['email'])
         FileUtils.ln_s(user_dir, user_public)
@@ -216,7 +217,7 @@ module Relayer
     end
 
     get '/logout' do
-      user_public_dir = File.join(Relayer.public_dir, 'Relayer/Users',
+      user_public_dir = File.join(Relayer.public_dir, 'relayer/users',
                                   session[:user].info['email'])
       FileUtils.rm(user_public_dir)
       session[:user] = nil
@@ -224,6 +225,7 @@ module Relayer
     end
 
     get '/auth/failure' do
+      session[:user] = nil
       redirect '/oct_segmentation'
     end
 

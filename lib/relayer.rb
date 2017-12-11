@@ -42,18 +42,16 @@ module Relayer
       Thread.abort_on_exception = true if verbose?
 
       init_dirs
-
-      set_up_default_user_dir
       check_num_threads
-      @colour_map = init_colour_map
+      init_colour_map
 
       self
     end
 
-    # relayer_dir = $HOME/.relayer/
-    # public_dir  = $HOME/.relayer/public/
-    # users_dir   = $HOME/.relayer/users/
-    # tmp_dir     = $HOME/.relayer/tmp/
+    # default relayer_dir = $HOME/.relayer/
+    # default public_dir  = $HOME/.relayer/public/
+    # default users_dir   = $HOME/.relayer/users/
+    # default tmp_dir     = $HOME/.relayer/tmp/
     attr_reader :config, :relayer_dir, :public_dir, :users_dir,
                 :tmp_dir, :colour_map
 
@@ -106,28 +104,26 @@ module Relayer
 
     # Set up the directory structure in @config[:gd_public_dir]
     def init_dirs
-      default_dirs
-      init_public_dir
-      FileUtils.mkdir_p @users_dir unless Dir.exist? @users_dir
-      FileUtils.mkdir_p @tmp_dir unless Dir.exist? @tmp_dir
-    end
-
-    def default_dirs
-      config[:relayer_dir] = File.expand_path config[:relayer_dir]
-      @public_dir = File.join(config[:relayer_dir], 'public')
-      @users_dir = File.join(config[:relayer_dir], 'users')
-      @tmp_dir = File.join(config[:relayer_dir], 'tmp')
+      config[:relayer_dir] = File.expand_path(config[:relayer_dir])
       logger.debug "Relayer Directory: #{config[:relayer_dir]}"
-      logger.debug "public_dir Directory: #{@public_dir}"
-      logger.debug "users_dir Directory: #{@users_dir}"
-      logger.debug "tmp_dir Directory: #{@tmp_dir}"
+      init_public_dir
+      init_public_data_dirs
+      init_tmp_dir
+      init_users_dir
+      set_up_default_user_dir
     end
 
     def init_public_dir
+      @public_dir = File.join(config[:relayer_dir], 'public')
+      logger.debug "public_dir Directory: #{@public_dir}"
       FileUtils.mkdir_p @public_dir unless Dir.exist?(@public_dir)
       root_assets = File.join(Relayer.root, 'public/assets')
       assets = File.join(@public_dir, 'assets')
       css = File.join(assets, 'css', "style-#{Relayer::VERSION}.min.css")
+      init_assets(root_assets, assets, css)
+    end
+
+    def init_assets(root_assets, assets, css)
       if environment == 'development'
         FileUtils.rm_rf(assets) unless File.symlink?(assets)
         FileUtils.ln_s(root_assets, @public_dir) unless File.exist?(assets)
@@ -135,21 +131,32 @@ module Relayer
         FileUtils.rm_rf(assets) if File.symlink?(assets) || !File.exist?(css)
         FileUtils.cp_r(root_assets, @public_dir) unless File.exist?(assets)
       end
-      init_public_data_dirs(@public_dir)
     end
 
-    def init_public_data_dirs(public_dir)
-      root_data = File.join(Relayer.root, 'public/Relayer')
-      public_gd = File.join(public_dir, 'Relayer')
+    def init_public_data_dirs
+      root_data = File.join(Relayer.root, 'public/relayer')
+      public_gd = File.join(@public_dir, 'relayer')
       return if File.exist?(public_gd)
-      FileUtils.cp_r(root_data, public_dir)
+      FileUtils.cp_r(root_data, @public_dir)
+    end
+
+    def init_tmp_dir
+      @tmp_dir = File.join(config[:relayer_dir], 'tmp')
+      logger.debug "tmp_dir Directory: #{@tmp_dir}"
+      FileUtils.mkdir_p @tmp_dir unless Dir.exist? @tmp_dir
+    end
+
+    def init_users_dir
+      @users_dir = File.join(config[:relayer_dir], 'users')
+      logger.debug "users_dir Directory: #{@users_dir}"
+      FileUtils.mkdir_p @users_dir unless Dir.exist? @users_dir
     end
 
     def set_up_default_user_dir
-      user_dir    = File.join(Relayer.users_dir, 'Relayer')
-      user_public = File.join(Relayer.public_dir, 'Relayer/users')
+      user_dir    = File.join(Relayer.users_dir, 'relayer')
+      user_public = File.join(Relayer.public_dir, 'relayer/users')
       FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
-      return if File.exist? File.join(user_public, 'Relayer')
+      return if File.exist? File.join(user_public, 'relayer')
       FileUtils.ln_s(user_dir, user_public)
     end
 
@@ -195,7 +202,7 @@ module Relayer
 
     def init_colour_map
       file = IO.read(File.join(@public_dir, 'assets/colourMap.json'))
-      JSON.parse(file)
+      @colour_map = JSON.parse(file)
     end
   end
 end

@@ -77,6 +77,7 @@ p#disclaimer {
 
 #analysis_results {
     display: none;
+    padding-top: 2rem;
     #surface_plot {
         height: 70vh;
         width: 100%;
@@ -115,6 +116,7 @@ p#disclaimer {
     width: 0;
     left: 0;
     top: 0;
+    display: none;
 }
 
 .segmented_image_wrapper {

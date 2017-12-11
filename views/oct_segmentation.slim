@@ -4,7 +4,7 @@
       | OCT Segmentation
     .card.analyse_card
       .card-content
-        span.card-title File Upload
+        span.card-title.cyan-text.text-darken-4 File Upload
         p.lead Drop a series of numbered images here (with the filenames numbered file001.jpg, file002.jpg etc.).
         .file_space#fine-uploader-validation
         form#oct_segmentation_analysis
@@ -12,7 +12,7 @@
             input type="hidden" name="user" value="#{Base64.encode64('relayer').chomp}"
           - else
             input type="hidden" name="user" value="#{Base64.encode64(session[:user].info['email']).chomp}"
-          .row
+          .row style="min-height:85px;"
             .input-field.col.s6
               select name="machine_type" 
                 option value="" selected="" disabled=""  Choose your option
@@ -38,10 +38,12 @@
           a href="#todo" terms and conditions
           | . Essentially, any files uploaded here should only be used for research purposes and the results shown here should not be interpreted in clinical setting unless one is qualified to do so.
     #analysis_results
-      h1.header.cyan-text.text-darken-4 Results
       .card.analyse_card
-        .card-content
-          span.card-title Surface plot
+        .card-content style="padding:2rem 3.5rem;"
+          .actions.right
+          span.card-title.cyan-text.text-darken-4 style="font-size: 3rem; margin-bottom:0"  Relayer Results 
+        .card-action
+          span.card-title.cyan-text.text-darken-4  Surface plot
           p.lead  Retinal thickness: distance in micrometers between ILM (Inner Limiting Membrane) and RPE (Retinal Pigment Epithelium) layers.
           .row
             .col.m12.l7

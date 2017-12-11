@@ -72,11 +72,11 @@ module Relayer
     def defaults
       {
         num_threads: 1,
-        port: 9292,
+        port: 3000,
         host: '0.0.0.0',
         relayer_dir: File.join(Dir.home, '.relayer/'),
         ssl: false,
-        matlab_bin: "matlab",
+        matlab_bin: 'matlab',
         oct_library_path: File.join(Relayer.root, 'matlab')
       }
     end

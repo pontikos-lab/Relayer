@@ -30,7 +30,7 @@ BANNER
        argument: true
 
     on 'g', 'data_dir=',
-       'The directory storing all app files and from where the app is served from.',
+       'Directory storing all app files & from where the app is served from.',
        argument: true
 
     on 'm', 'matlab_bin=',
@@ -138,8 +138,11 @@ MSG
         exit
       end
 
-      Relayer.config.write_config_file if set?
-      Relayer.config.write_config_file if fetch_option(:set).value
+      if set?
+        Relayer.config.write_config_file
+        Relayer.config.write_config_file if fetch_option(:set).value
+        exit
+      end
 
       if interactive?
         Relayer.irb

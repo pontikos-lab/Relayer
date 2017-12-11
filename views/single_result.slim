@@ -1,0 +1,19 @@
+#analysis_container.container data-assets_path="#{@assets_path}"
+    #analysis_results
+      .card.analyse_card
+        .card-content
+          .actions.right
+          h1.header.cyan-text.text-darken-4 Relayer Results
+        .card-action
+          span.card-title Surface plot
+          p.lead  Retinal thickness: distance in micrometers between ILM (Inner Limiting Membrane) and RPE (Retinal Pigment Epithelium) layers.
+          .row
+            .col.m12.l7
+              #surface_plot
+            .col.m12.l5.segmented_image_wrapper
+              p#segmented_image_title 
+                | Segmentation for B-scan 
+                span#segmented_image_number 1
+              #segmented_image_slider
+              img#segmented_image alt="Segmented OCT Scan"
+          .clearfix
