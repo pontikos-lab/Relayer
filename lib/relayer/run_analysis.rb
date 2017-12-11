@@ -109,8 +109,8 @@ module Relayer
 
       def matlab_cmd(input)
         generate_matlab_script(input)
-        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop" \
-        " -sd '#{@run_out_dir}' -r analysis"
+        "#{config[:matlab_bin]} -nodisplay -nosplash -nodesktop -r analysis" \
+        " -sd '#{@run_out_dir}'"
       end
 
       def generate_matlab_script(input)
