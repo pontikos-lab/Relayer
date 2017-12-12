@@ -198,3 +198,14 @@ p#disclaimer {
         z-index: 999;
     }
 }
+
+.actions {
+    display: -webkit-flex;
+    margin-left: auto;
+    padding: 10px 0;
+    a {
+        min-width: 36px;
+        padding: 0 8px;
+        margin-right: 0px
+    }
+}

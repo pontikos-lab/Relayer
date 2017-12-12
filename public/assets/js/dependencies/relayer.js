@@ -82,214 +82,8 @@ if (!RL) {
         });
     };
 
-    RL.checkFileNames = function() {
-        var files = RL.fineUploader.getUploads();
-        console.log(files);
-        if (files.length > 1) {
-            var filenameEndings = RL.getFilenamesEndings;
-            var sorted = RL.isSorted(filenameEndings);
-            console.log(sorted);
-        }
-        return true;
-    };
-
-    RL.getFilenamesEndings = function() {
-        var filenames = [];
-        for (var i = 0; i < files.length; i++) {
-            var e = parseInt(files[i].originalName.slice(-3));
-            filenames.push(e);
-        }
-        return filenames;
-    };
-
-    RL.isSorted = function(a) {
-        for (var i = 0; i < a.length; i++) {
-            if (a[i] > a[i + 1]) {
-                return false; // It is proven that the array is not sorted.
-            }
-        }
-        return true; // If this part has been reached, the array must be sorted.
-    };
-
-    RL.produceResults = function(data) {
-        $(".analyse_card").data("assets_path", data.assets_path);
-        $(".analyse_card").data("result_uuid", data.uuid);
-        var download_link = data.assets_path + "/relayer_results.zip";
-        $("#download-all-results").data("download", download_link);
-        var jsonFile = data.assets_path + "/out/thickness.json";
-        RL.initDownloadResultBtn();
-        $.getJSON(jsonFile, function(json) {
-            RL.initSlider(json.length);
-            RL.surfacePlot = RL.create3dSurfacePlot(json, data.scale);
-            window.addEventListener("resize", function() {
-                Plotly.Plots.resize(RL.surfacePlot);
-            });
-            RL.setImage(1);
-        });
-    };
-
-    RL.create3dSurfacePlot = function(z_data, colourScale) {
-        var data = [{ z: z_data, type: "surface", colorscale: colourScale }];
-        var layout = { title: "Thickness (µm)", scene: { zaxis: { range: [0, 600] } } };
-        var parentWidth = 100;
-        var surfacePlotNode = Plotly.d3
-            .select("#surface_plot")
-            .style({
-                width: parentWidth + "%",
-                "margin-left": (100 - parentWidth) / 2 + "%"
-            });
-        var surfacePlot = surfacePlotNode.node();
-        Plotly.newPlot(surfacePlot, data, layout);
-
-        surfacePlot.on("plotly_hover", function(data) {
-            var debounced_fn = _.debounce(function() {
-                var infotext = data.points.map(function(d) {
-                    if (d.y !== 0) {
-                        var slider = document.getElementById("segmented_image_slider");
-                        slider.noUiSlider.set(d.y);
-                    }
-                });
-            }, 50);
-            debounced_fn();
-        });
-        return surfacePlot;
-    };
-
-    RL.setImage = function(i) {
-        var assets_path = $(".analyse_card").data("assets_path");
-        var url = assets_path + "/out/" + RL.lpad(i) + ".jpg";
-        $("#segmented_image").attr('src', url);
-    };
-
-    // Left Pad a number
-    RL.lpad = function(value) {
-        var padding = 3;
-        var zeroes = new Array(padding + 1).join("0");
-        return (zeroes + value).slice(-padding);
-    };
-
-    RL.initSlider = function(y_max) {
-        var slider = document.getElementById("segmented_image_slider");
-        noUiSlider.create(slider, {
-            start: 1,
-            step: 1,
-            orientation: "horizontal", // 'horizontal' or 'vertical'
-            range: {
-                min: 1,
-                max: y_max
-            },
-            format: {
-                to: function(val) {
-                    return RL.round(val, 0);
-                },
-                from: function(val) {
-                    return RL.round(val, 0);
-                }
-            }
-        });
-        slider.noUiSlider.on("update", function(values, handle) {
-            var debounced_fn = _.debounce(function() {
-                var val = values[handle];
-                RL.setImage(val);
-                $("#segmented_image_number").text(val);
-            }, 50);
-            debounced_fn();
-        });
-    };
-
-    RL.showExemplarResults = function() {
-        $("#analysis_results").show();
-        data = {
-            assets_path: "/relayer/users/relayer/2017-12-11_22-00-28_161-161900000",
-            scale: [
-                ["0", "rgb(140,0,186)"],
-                ["0.25", "rgb(39,0,236)"],
-                ["0.5", "rgb(0,104,151)"],
-                ["0.75", "rgb(18,255,0)"],
-                ["1", "rgb(170,255,0)"]
-            ],
-            exit_code: 0
-        };
-        RL.produceResults(data);
-    };
-
-    RL.initExemplarResultsBtn = function() {
-        $(".exemplar_output").on('click', function(e) {
-            $("#beta_modal").modal('close');
-            $("#loading_modal").modal("open");
-            RL.showExemplarResults();
-            $("#analysis_results").imagesLoaded().then(function() {
-                $("#loading_modal").modal("close");
-            });
-        });
-    };
-
-    RL.setupGoogleAuthentication = function() {
-        gapi.auth.authorize({
-            immediate: true,
-            response_type: "code",
-            cookie_policy: "single_host_origin",
-            client_id: RL.CLIENT_ID,
-            scope: "email"
-        });
-        $(".login_button").on("click", function(e) {
-            e.preventDefault();
-            /** global: gapi */
-            gapi.auth.authorize({
-                    immediate: false,
-                    response_type: "code",
-                    cookie_policy: "single_host_origin",
-                    client_id: RL.CLIENT_ID,
-                    scope: "email"
-                },
-                function(response) {
-                    if (response && !response.error) {
-                        // google authentication succeed, now post data to server.
-                        jQuery.ajax({
-                            type: "POST",
-                            url: "/auth/google_oauth2/callback",
-                            data: response,
-                            success: function() {
-                                // TODO - just update the DOM instead of a redirect
-                                $(location).attr(
-                                    "href",
-                                    RL.protocol() + window.location.host + "/oct_segmentation"
-                                );
-                            }
-                        });
-                    } else {
-                        console.log("ERROR Response google authentication failed");
-                        // TODO: ERROR Response google authentication failed
-                    }
-                }
-            );
-        });
-    };
-
-    RL.protocol = function() {
-        if (RL.USING_SLL === "true") {
-            return "https://";
-        } else {
-            return "http://";
-        }
-    };
-
-    RL.addUserDropDown = function() {
-        $(".dropdown-button").dropdown({
-            inDuration: 300,
-            outDuration: 225,
-            hover: true,
-            belowOrigin: true,
-            alignment: "right"
-        });
-    };
-
-    RL.round = function(value, decimals) {
-        return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
-    };
-
     RL.initDownloadResultBtn = function() {
-        $("#download-all-results").on('click', function() {
+        $("#download-all-results").on("click", function() {
             $("#modal_header_text").text("Creating Download Link");
             $("#loading_modal").modal({ dismissible: false });
             $("#loading_modal").modal("open");
@@ -308,19 +102,19 @@ if (!RL) {
     RL.delete_result = function() {
         $("#analysis_results").on("click", "#delete_results", function() {
             $("#delete_modal").modal("open");
-            var resultId = $(this).closest(".card").data("result_uuid");
-            $("#delete_modal").attr("data-result_uuid", resultId);
+            var resultId = $(this).closest(".card").data("uuid");
+            $("#delete_modal").attr("data-uuid", resultId);
         });
 
         $(".delete-results").click(function() {
             $("#modal_header_text").text("Deleting Result");
             $("#loading_modal").modal({ dismissible: false });
             $("#loading_modal").modal("open");
-            var result_uuid = $("#delete_modal").data("result_uuid");
+            var uuid = $("#delete_modal").data("uuid");
             $.ajax({
                 type: "POST",
                 url: "/delete_result",
-                data: { result_id: result_uuid },
+                data: { uuid: uuid },
                 success: function() {
                     location.reload();
                 },
@@ -400,6 +194,220 @@ if (!RL) {
             $("#analysis_results").html('<div class="card red lighten-2" role="alert"><div class="card-content white-text"><h3>Oops! Relayer went wonky!</h3><p style="font-size: 1.5rem"><strong>Apologies, there was an error with your request. Please try again.</strong></p><p>Error Message:' + errorMessage + " The server responded with the status code: " + String(e.status) + ". Please refresh the page and try again.</p><p>If the error persists, please contact the administrator.</p></div></div>");
             $("#loading_modal").modal("close"); // remove progress notification
         }
+    };
+
+    RL.checkFileNames = function() {
+        var files = RL.fineUploader.getUploads();
+        console.log(files);
+        if (files.length > 1) {
+            var filenameEndings = RL.getFilenamesEndings;
+            var sorted = RL.isSorted(filenameEndings);
+            console.log(sorted);
+        }
+        return true;
+    };
+
+    RL.getFilenamesEndings = function() {
+        var filenames = [];
+        for (var i = 0; i < files.length; i++) {
+            var e = parseInt(files[i].originalName.slice(-3));
+            filenames.push(e);
+        }
+        return filenames;
+    };
+
+    RL.isSorted = function(a) {
+        for (var i = 0; i < a.length; i++) {
+            if (a[i] > a[i + 1]) {
+                return false; // It is proven that the array is not sorted.
+            }
+        }
+        return true; // If this part has been reached, the array must be sorted.
+    };
+
+    RL.produceResults = function(data) {
+        $(".analyse_card").data("assets_path", data.assets_path);
+        $(".analyse_card").data("result_uuid", data.uuid);
+        $("#open_in_new_btn").attr("href", data.results_url);
+        var download_link = data.assets_path + "/relayer_results.zip";
+        $("#download-all-results").data("download", download_link);
+        RL.initDownloadResultBtn();
+        var jsonFile = data.assets_path + "/out/thickness.json";
+        $.getJSON(jsonFile, function(json) {
+            RL.initSlider(json.length);
+            RL.surfacePlot = RL.create3dSurfacePlot(json, data.scale);
+            window.addEventListener("resize", function() {
+                Plotly.Plots.resize(RL.surfacePlot);
+            });
+        });
+        RL.setImage(1);
+        RL.delete_result();
+        RL.share_result();
+        RL.remove_share();
+
+    };
+
+    RL.create3dSurfacePlot = function(z_data, colourScale) {
+        var data = [{ z: z_data, type: "surface", colorscale: colourScale }];
+        var layout = { title: "Thickness (µm)", scene: { zaxis: { range: [0, 600] } } };
+        var parentWidth = 100;
+        var surfacePlotNode = Plotly.d3
+            .select("#surface_plot")
+            .style({
+                width: parentWidth + "%",
+                "margin-left": (100 - parentWidth) / 2 + "%"
+            });
+        var surfacePlot = surfacePlotNode.node();
+        Plotly.newPlot(surfacePlot, data, layout);
+
+        surfacePlot.on("plotly_hover", function(data) {
+            var debounced_fn = _.debounce(function() {
+                var infotext = data.points.map(function(d) {
+                    if (d.y !== 0) {
+                        var slider = document.getElementById("segmented_image_slider");
+                        slider.noUiSlider.set(d.y);
+                    }
+                });
+            }, 50);
+            debounced_fn();
+        });
+        return surfacePlot;
+    };
+
+    RL.setImage = function(i) {
+        var assets_path = $(".analyse_card").data("assets_path");
+        var url = assets_path + "/out/" + RL.lpad(i) + ".jpg";
+        $("#segmented_image").attr('src', url);
+    };
+
+    // Left Pad a number
+    RL.lpad = function(value) {
+        var padding = 3;
+        var zeroes = new Array(padding + 1).join("0");
+        return (zeroes + value).slice(-padding);
+    };
+
+    RL.initSlider = function(y_max) {
+        var slider = document.getElementById("segmented_image_slider");
+        noUiSlider.create(slider, {
+            start: 1,
+            step: 1,
+            orientation: "horizontal",
+            range: { min: 1, max: y_max },
+            format: {
+                to: function(val) {
+                    return RL.round(val, 0);
+                },
+                from: function(val) {
+                    return RL.round(val, 0);
+                }
+            }
+        });
+        slider.noUiSlider.on("update", function(values, handle) {
+            var debounced_fn = _.debounce(function() {
+                var val = values[handle];
+                RL.setImage(val);
+                $("#segmented_image_number").text(val);
+            }, 50);
+            debounced_fn();
+        });
+    };
+
+    RL.addUserDropDown = function() {
+        $(".dropdown-button").dropdown({
+            inDuration: 300,
+            outDuration: 225,
+            hover: true,
+            belowOrigin: true,
+            alignment: "right"
+        });
+    };
+
+    RL.setupGoogleAuthentication = function() {
+        gapi.auth.authorize({
+            immediate: true,
+            response_type: "code",
+            cookie_policy: "single_host_origin",
+            client_id: RL.CLIENT_ID,
+            scope: "email"
+        });
+        $(".login_button").on("click", function(e) {
+            e.preventDefault();
+            /** global: gapi */
+            gapi.auth.authorize({
+                    immediate: false,
+                    response_type: "code",
+                    cookie_policy: "single_host_origin",
+                    client_id: RL.CLIENT_ID,
+                    scope: "email"
+                },
+                function(response) {
+                    if (response && !response.error) {
+                        // google authentication succeed, now post data to server.
+                        jQuery.ajax({
+                            type: "POST",
+                            url: "/auth/google_oauth2/callback",
+                            data: response,
+                            success: function() {
+                                // TODO - just update the DOM instead of a redirect
+                                $(location).attr(
+                                    "href",
+                                    RL.protocol() + window.location.host + "/oct_segmentation"
+                                );
+                            }
+                        });
+                    } else {
+                        console.log("ERROR Response google authentication failed");
+                        // TODO: ERROR Response google authentication failed
+                    }
+                }
+            );
+        });
+    };
+
+    RL.protocol = function() {
+        if (RL.USING_SLL === "true") {
+            return "https://";
+        } else {
+            return "http://";
+        }
+    };
+
+    RL.round = function(value, decimals) {
+        return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+    };
+
+    RL.showExemplarResults = function() {
+        $("#analysis_results").show();
+        data = {
+            assets_path: "/relayer/users/relayer/2017-12-11_22-00-28_161-161900000",
+            share_url: "http://localhost:3000/sh/cmVsYXllcg==/2017-12-11_22-00-28_161-161900000",
+            results_url: "http://localhost:3000/result/cmVsYXllcg==/2017-12-11_22-00-28_161-161900000",
+            scale: [
+                ["0", "rgb(140,0,186)"],
+                ["0.25", "rgb(39,0,236)"],
+                ["0.5", "rgb(0,104,151)"],
+                ["0.75", "rgb(18,255,0)"],
+                ["1", "rgb(170,255,0)"]
+            ],
+            exit_code: 0
+        };
+        RL.produceResults(data);
+    };
+
+    RL.initExemplarResultsBtn = function() {
+        $(".exemplar_output").on("click", function(e) {
+            $("#beta_modal").modal("close");
+            $("#loading_modal").modal("open");
+            $("#delete_results").hide();
+            $("#share_the_link_btn").hide();
+            $("analyse_card").data("assets_path", data.assets_path);
+            $("#open_in_new_btn").attr("href", data.results_url);
+            RL.showExemplarResults();
+            $("#analysis_results").imagesLoaded().then(function() {
+                $("#loading_modal").modal("close");
+            });
+        });
     };
 }());
 

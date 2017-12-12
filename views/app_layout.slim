@@ -71,13 +71,6 @@ html lang="en"
 
     == yield
 
-    #loading_modal.modal
-      .modal-content
-        h4#modal_header_text
-        p#modal_text
-        .progress
-          .indeterminate.cyan.darken-3
-
     /! Dropdown Structure
     ul#user_menu_dropdown.dropdown-content.collection
       li.collection-item.avatar onclick="location.href='#{base_url}/faq';"
@@ -89,6 +82,45 @@ html lang="en"
       li#logout.collection-item.avatar onclick="location.href='#{base_url}/logout';"
         i.material-icons.circle.cyan.darken-3  power_settings_new
         span.title Log Out
+
+    #loading_modal.modal
+      .modal-content
+        h4#modal_header_text
+        p#modal_text
+          | This should take a few seconds. Please leave this page open
+        .progress
+          .indeterminate.cyan.darken-3
+
+    #share_modal.modal
+      .modal-content
+        h4 Share Your Results
+        p Your results are accessible using the following link
+        .row
+          .input-field.col.s12
+            input#share_link_input.share_link_input type="text" placeholder="Share Link" /
+            label for="share_link_input"  Share Link
+      .modal-footer
+        a.remove_link.waves-effect.waves-red.btn-flat.left  Remove Sharing Link
+        a.modal-action.modal-close.waves-effect.waves-green.btn-flat href="#!"  Done
+
+    #share_the_link_modal.modal
+      .modal-content
+        h4 Your results are accessible using the following link
+        .row
+          .input-field.col.s12
+            input#share_link_input1.share_link_input type="text" placeholder="Share Link" /
+            label for="share_link_input1"  Share Link
+      .modal-footer
+        a.remove_link.waves-effect.waves-red.btn-flat.left  Remove Sharing Link
+        a.modal-action.modal-close.waves-effect.waves-green.btn-flat href="#!"  Done
+
+    #delete_modal.modal
+      .modal-content
+        h4 Delete Results
+        p Are you sure you want to delete this Result?
+      .modal-footer
+        a.modal-action.modal-close.waves-effect.waves-green.btn-flat.left href="#!"   Cancel
+        a.delete-results.waves-effect.waves-red.btn-flat   Delete
 
     #login_modal.modal
       .modal-content
@@ -164,4 +196,28 @@ html lang="en"
           RL.initSubmit();
           RL.initFineUploader();
           RL.initExemplarResultsBtn();
+        });
+    - if request.path_info =~ %r{^/result/} || request.path_info =~ %r{^/sh/} || request.path_info =~ %r{^/exemplar_results}
+      javascript:
+        $(function() {
+          RL.initDownloadResultBtn()
+          RL.delete_result()
+          RL.share_result()
+          RL.remove_share()
+          var jsonFile = $(".analyse_card").data("assets_path") + "/out/thickness.json";
+          $.getJSON(jsonFile, function(json) {
+              RL.initSlider(json.length);
+              RL.surfacePlot = RL.create3dSurfacePlot(json, $(".analyse_card").data("scale"));
+              window.addEventListener("resize", function() {
+                  Plotly.Plots.resize(RL.surfacePlot);
+              });
+          });
+        });
+    - if request.path_info =~ %r{^/my_results} 
+      javascript:
+        $(function() {
+          RL.initDownloadResultBtn()
+          RL.delete_result()
+          RL.share_result()
+          RL.remove_share()
         });

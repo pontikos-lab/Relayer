@@ -1,19 +1,42 @@
-#analysis_container.container data-assets_path="#{@assets_path}"
+#analysis_container.container
     #analysis_results
-      .card.analyse_card
-        .card-content
-          .actions.right
-          h1.header.cyan-text.text-darken-4 Relayer Results
-        .card-action
-          span.card-title Surface plot
-          p.lead  Retinal thickness: distance in micrometers between ILM (Inner Limiting Membrane) and RPE (Retinal Pigment Epithelium) layers.
-          .row
-            .col.m12.l7
-              #surface_plot
-            .col.m12.l5.segmented_image_wrapper
-              p#segmented_image_title 
-                | Segmentation for B-scan 
-                span#segmented_image_number 1
-              #segmented_image_slider
-              img#segmented_image alt="Segmented OCT Scan"
-          .clearfix
+      - if @results.nil?
+        .card.analyse_card
+          .card-content style="padding:2rem 3.5rem;"
+            span.card-title.cyan-text.text-darken-4 style="font-size: 3rem; margin-bottom:0" Relayer Results
+          .card-action
+            span.card-title.cyan-text.text-darken-4 Oops. We can't find this analysis.
+            p  The result files for this analysis no longer exist. This is likely to be due to the analysis being deleted by the owner. Alternatively, please ensure that you have enter the url correctly.
+      -else
+        .card.analyse_card data-assets_path="#{@results['assets_path']}" data-uuid="#{@results['uniq_result_id']}" data-share-link="#{@results['share_url']}" data-scale="#{@results['scale']}"
+          .card-content style="padding:2rem 3.5rem;"
+            .actions.right
+              a#download-all-results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 data-download="#{@results['assets_path']}/relayer_results.zip"
+                i.material-icons  file_download
+              - if request.path_info !~ %r{^/sh/}
+                a#delete_results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
+                  i.material-icons  delete
+                - if File.exist? File.join(@results['full_path'], '.share')
+                  a#share_the_link_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 style="display:none;"
+                    i.material-icons  link
+                  a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
+                    i.material-icons  share
+                - else
+                  a#share_the_link_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
+                    i.material-icons  link
+                  a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 style="display:none;"
+                    i.material-icons  share
+            span.card-title.cyan-text.text-darken-4 style="font-size: 3rem; margin-bottom:0" Relayer Results
+          .card-action
+            span.card-title.cyan-text.text-darken-4  Surface plot
+            p.lead  Retinal thickness: distance in micrometers between ILM (Inner Limiting Membrane) and RPE (Retinal Pigment Epithelium) layers.
+            .row
+              .col.m12.l7
+                #surface_plot
+              .col.m12.l5.segmented_image_wrapper
+                p#segmented_image_title 
+                  | Segmentation for B-scan 
+                  span#segmented_image_number 1
+                #segmented_image_slider
+                img#segmented_image alt="Segmented OCT Scan" src="#{@results['assets_path']}/out/001.jpg"
+            .clearfix
