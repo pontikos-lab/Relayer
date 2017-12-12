@@ -95,6 +95,7 @@ if (!RL) {
                     $("#loading_modal").modal("close");
                 }
             });
+            $("#loading_modal").modal("close");
             return false; //this is critical to stop the click event which will trigger a normal file download!
         });
     };
