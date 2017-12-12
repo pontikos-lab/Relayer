@@ -109,8 +109,8 @@ module Relayer
     end
 
     get '/my_results' do
-      # @my_results = History.run(session[:user].info['email'])
-      @my_results = History.run('relayer')
+      redirect to('auth/google_oauth2') if session[:user].nil?
+      @my_results = History.run(session[:user].info['email'])
       slim :my_results, layout: :app_layout
     end
 
