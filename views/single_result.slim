@@ -17,14 +17,14 @@
                 a#delete_results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
                   i.material-icons  delete
                 - if File.exist? File.join(@results['full_path'], '.share')
-                  a#share_the_link_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 style="display:none;"
-                    i.material-icons  link
-                  a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
-                    i.material-icons  share
-                - else
                   a#share_the_link_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
                     i.material-icons  link
                   a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 style="display:none;"
+                    i.material-icons  share
+                - else
+                  a#share_the_link_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 style="display:none;"
+                    i.material-icons  link
+                  a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
                     i.material-icons  share
             span.card-title.cyan-text.text-darken-4 style="font-size: 3rem; margin-bottom:0" Relayer Results
           .card-action

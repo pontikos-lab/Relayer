@@ -136,7 +136,7 @@ module Relayer
       json_file = File.join(Relayer.public_dir, 'relayer/share/', email,
                             params['time'], 'params.json')
       if File.exist? json_file
-        @results  = JSON.parse(IO.read(json_file))
+        @results = JSON.parse(IO.read(json_file))
       else
         @respond = {}
       end
@@ -200,9 +200,8 @@ module Relayer
       email = Base64.decode64(params[:encoded_email])
       share = File.join(Relayer.public_dir, 'relayer/share', email,
                         params['time'])
-      FileUtils.rm_r(share) if File.exist? share
-      share_file = File.join(Relayer.users_dir, email, params['time'],
-                             '.share')
+      FileUtils.rm_rf(share) if File.exist? share
+      share_file = File.join(Relayer.users_dir, email, params['time'], '.share')
       FileUtils.rm(share_file) if File.exist? share_file
     end
 
