@@ -112,9 +112,12 @@ if (!RL) {
     };
 
     RL.produceResults = function(data) {
-        $("#analysis_results").data("assets_path", data.assets_path);
-        jsonFile = data.assets_path + "/out/thickness.json";
-
+        $(".analyse_card").data("assets_path", data.assets_path);
+        $(".analyse_card").data("result_uuid", data.uuid);
+        var download_link = data.assets_path + "/relayer_results.zip";
+        $("#download-all-results").data("download", download_link);
+        var jsonFile = data.assets_path + "/out/thickness.json";
+        RL.initDownloadResultBtn();
         $.getJSON(jsonFile, function(json) {
             RL.initSlider(json.length);
             RL.surfacePlot = RL.create3dSurfacePlot(json, data.scale);
@@ -126,7 +129,6 @@ if (!RL) {
     };
 
     RL.create3dSurfacePlot = function(z_data, colourScale) {
-        console.log(colourScale);
         var data = [{ z: z_data, type: "surface", colorscale: colourScale }];
         var layout = { title: "Thickness (µm)", scene: { zaxis: { range: [0, 600] } } };
         var parentWidth = 100;
@@ -154,7 +156,7 @@ if (!RL) {
     };
 
     RL.setImage = function(i) {
-        var assets_path = $("#analysis_results").data("assets_path");
+        var assets_path = $(".analyse_card").data("assets_path");
         var url = assets_path + "/out/" + RL.lpad(i) + ".jpg";
         $("#segmented_image").attr('src', url);
     };
@@ -285,6 +287,120 @@ if (!RL) {
     RL.round = function(value, decimals) {
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
     };
+
+    RL.initDownloadResultBtn = function() {
+        $("#download-all-results").on('click', function() {
+            $("#modal_header_text").text("Creating Download Link");
+            $("#loading_modal").modal({ dismissible: false });
+            $("#loading_modal").modal("open");
+            $.fileDownload($(this).data("download"), {
+                successCallback: function() {
+                    $("#loading_modal").modal("close");
+                },
+                failCallback: function() {
+                    $("#loading_modal").modal("close");
+                }
+            });
+            return false; //this is critical to stop the click event which will trigger a normal file download!
+        });
+    };
+
+    RL.delete_result = function() {
+        $("#analysis_results").on("click", "#delete_results", function() {
+            $("#delete_modal").modal("open");
+            var resultId = $(this).closest(".card").data("result_uuid");
+            $("#delete_modal").attr("data-result_uuid", resultId);
+        });
+
+        $(".delete-results").click(function() {
+            $("#modal_header_text").text("Deleting Result");
+            $("#loading_modal").modal({ dismissible: false });
+            $("#loading_modal").modal("open");
+            var result_uuid = $("#delete_modal").data("result_uuid");
+            $.ajax({
+                type: "POST",
+                url: "/delete_result",
+                data: { result_id: result_uuid },
+                success: function() {
+                    location.reload();
+                },
+                error: function(e, status) {
+                    GD.ajaxError(e, status);
+                }
+            });
+        });
+    };
+
+    RL.share_result = function() {
+        $("#analysis_results").on("click", "#share_btn", function() {
+            var share_link = $(this).closest(".card").data("share-link");
+            $("#share_the_link_btn").show();
+            $("#share_btn").hide();
+            $("#share_link_input").val(share_link);
+            $("#share_link_input").prop("readonly", true);
+            $("#share_modal").modal("open");
+            $("#share_modal").attr("data-share-link", share_link);
+            $("#share_link_input").select();
+            $.ajax({
+                type: "POST",
+                url: share_link,
+                error: function(e, status) {
+                    GD.ajaxError(e, status);
+                }
+            });
+        });
+        $("#analysis_results").on("click", "#share_the_link_btn", function() {
+            var share_link = $(this).closest(".card").data("share-link");
+            $("#share_link_input1").val(share_link);
+            $("#share_link_input1").prop("readonly", true);
+            $("#share_the_link_modal").modal("open");
+            $("#share_the_link_modal").attr("data-share-link", share_link);
+            $("#share_link_input1").select();
+        });
+
+        $(".share_link_input").focus(function() {
+            $(this).select();
+            // Work around Chrome's little problem
+            $(this).mouseup(function() {
+                // Prevent further mouseup intervention
+                $(this).unbind("mouseup");
+                return false;
+            });
+        });
+    };
+
+    RL.remove_share = function() {
+        $(".remove_link").click(function() {
+            var share_link = $(this).closest(".modal").data("share-link");
+            var remove_link = share_link.replace(/\/sh\//, "/rm/");
+            $("#share_the_link_btn").hide();
+            $("#share_btn").show();
+            $("#share_modal").modal("close");
+            $("#share_the_link_modal").modal("close");
+            $.ajax({
+                type: "POST",
+                url: remove_link,
+                error: function(e, status) {
+                    RL.ajaxError(e, status);
+                }
+            });
+        });
+    };
+
+    RL.ajaxError = function(e, status) {
+        var errorMessage;
+        if (e.status == 500 || e.status == 400) {
+            errorMessage = e.responseText;
+            $("#analysis_results").show();
+            $("#analysis_results").html(errorMessage);
+            $("#loading_modal").modal("close"); // remove progress notification
+        } else {
+            errorMessage = e.responseText;
+            $("#analysis_results").show();
+            $("#analysis_results").html('<div class="card red lighten-2" role="alert"><div class="card-content white-text"><h3>Oops! Relayer went wonky!</h3><p style="font-size: 1.5rem"><strong>Apologies, there was an error with your request. Please try again.</strong></p><p>Error Message:' + errorMessage + " The server responded with the status code: " + String(e.status) + ". Please refresh the page and try again.</p><p>If the error persists, please contact the administrator.</p></div></div>");
+            $("#loading_modal").modal("close"); // remove progress notification
+        }
+    };
 }());
 
 (function($) {
@@ -293,12 +409,11 @@ if (!RL) {
         var $imgs = this.find('img[src!=""]');
         // if there's no images, just return an already resolved promise
         if (!$imgs.length) {
-            return $.Deferred()
-                .resolve()
-                .promise();
+            return $.Deferred().resolve().promise();
         }
 
-        // for each image, add a deferred object to the array which resolves when the image is loaded (or if loading fails)
+        // for each image, add a deferred object to the array which resolves 
+        // when the image is loaded (or if loading fails)
         var dfds = [];
         $imgs.each(function() {
             var dfd = $.Deferred();
@@ -313,7 +428,8 @@ if (!RL) {
             };
             img.src = this.src;
         });
-        // return a master promise object which will resolve when all the deferred objects have resolved
+        // return a master promise object which will resolve when all 
+        // the deferred objects have resolved
         // i.e. - when all the images are loaded
         return $.when.apply($, dfds);
     };
