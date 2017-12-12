@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    relayer (0.2.7)
+    relayer (0.2.8)
       awesome_print (~> 1.8)
       omniauth (~> 1.6)
       omniauth-google-oauth2 (~> 0.5)
