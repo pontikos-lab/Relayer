@@ -397,6 +397,7 @@ if (!RL) {
         RL.produceResults(data);
         $("#delete_results").hide();
         $("#share_the_link_btn").hide();
+        $('#share_btn').hide();
         $("html, body").animate({
             scrollTop: $("#analysis_results").offset().top
         });
