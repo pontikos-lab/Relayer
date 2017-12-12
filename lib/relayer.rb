@@ -52,8 +52,8 @@ module Relayer
     # default public_dir  = $HOME/.relayer/public/
     # default users_dir   = $HOME/.relayer/users/
     # default tmp_dir     = $HOME/.relayer/tmp/
-    attr_reader :config, :relayer_dir, :public_dir, :users_dir,
-                :tmp_dir, :colour_map
+    attr_reader :config, :relayer_dir, :public_dir, :users_dir, :tmp_dir,
+                :colour_map
 
     # Starting the app manually
     def run
@@ -153,11 +153,17 @@ module Relayer
     end
 
     def set_up_default_user_dir
+      set_up_archive_dir
       user_dir    = File.join(Relayer.users_dir, 'relayer')
       user_public = File.join(Relayer.public_dir, 'relayer/users')
       FileUtils.mkdir(user_dir) unless Dir.exist?(user_dir)
       return if File.exist? File.join(user_public, 'relayer')
       FileUtils.ln_s(user_dir, user_public)
+    end
+
+    def set_up_archive_dir
+      archive_dir = File.join(Relayer.users_dir, 'archive')
+      FileUtils.mkdir(archive_dir) unless Dir.exist?(archive_dir)
     end
 
     def check_num_threads
