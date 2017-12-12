@@ -229,6 +229,7 @@ if (!RL) {
     RL.produceResults = function(data) {
         $(".analyse_card").data("assets_path", data.assets_path);
         $(".analyse_card").data("result_uuid", data.uuid);
+        $(".analyse_card").data("share-link", data.share_url);
         $("#open_in_new_btn").attr("href", data.results_url);
         var download_link = data.assets_path + "/relayer_results.zip";
         $("#download-all-results").data("download", download_link);
@@ -245,7 +246,6 @@ if (!RL) {
         RL.delete_result();
         RL.share_result();
         RL.remove_share();
-
     };
 
     RL.create3dSurfacePlot = function(z_data, colourScale) {
