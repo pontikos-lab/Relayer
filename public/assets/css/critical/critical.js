@@ -35,3 +35,23 @@ critical.generate({
     timeout: 300000,
     minify: true
 });
+
+critical.generate({
+    src: "http://localhost:3000/result/cmVsYXllcg==/2017-12-11_22-00-28_161-161900000",
+    dest: "public/assets/css/critical/single_results.min.css",
+    dimensions: dimensions,
+    ignore: [/url\(/, "@font-face", /print/],
+    include: ["profile_img"],
+    timeout: 300000,
+    minify: true
+});
+
+critical.generate({
+    src: "http://localhost:3000/my_results",
+    dest: "public/assets/css/critical/my_results.min.css",
+    dimensions: dimensions,
+    ignore: [/url\(/, "@font-face", /print/],
+    include: ["profile_img"],
+    timeout: 300000,
+    minify: true
+});
