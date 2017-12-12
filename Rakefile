@@ -29,9 +29,11 @@ task :assets do
   " ./public/assets/css/style-#{Relayer::VERSION}.min.css"
   `rm ./public/assets/js/app-*.min.js`
   `rm ./public/assets/js/app-*.min.js.map`
-  sh "uglifyjs './public/assets/js/jquery.fine-uploader.min.js'" \
-     " './public/assets/js/nouislider.js' './public/assets/js/underscore.js'" \
-     " './public/assets/js/app.js' -m -c --source-map" \
+  sh "uglifyjs './public/assets/js/dependencies/jquery.fine-uploader.min.js'" \
+     " './public/assets/js/dependencies/jquery.file-download.js'" \
+     " './public/assets/js/dependencies/nouislider.js'" \
+     " './public/assets/js/dependencies/underscore.js'" \
+     " './public/assets/js/dependencies/relayer.js' -m -c --source-map" \
      " -o './public/assets/js/app-#{Relayer::VERSION}.min.js'"
 end
 
