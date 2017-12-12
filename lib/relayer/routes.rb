@@ -89,7 +89,7 @@ module Relayer
       end
 
       def base_url
-        @base_url ||= "#{Relayer.ssl? ? 'https' : 'http'}://#{host}"
+        @base_url ||= "#{Relayer.ssl? ? 'https' : 'http'}://#{host_with_port}"
       end
     end
 
