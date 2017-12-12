@@ -92,7 +92,7 @@ module Relayer
     end
 
     # Run Relayer interactively
-    def irb
+    def pry
       # rubocop:disable Lint/Debugger
       ARGV.clear
       require 'pry'

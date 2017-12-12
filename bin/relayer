@@ -145,7 +145,7 @@ MSG
       end
 
       if interactive?
-        Relayer.irb
+        Relayer.pry
         exit
       end
 
