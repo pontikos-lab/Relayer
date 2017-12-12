@@ -393,6 +393,8 @@ if (!RL) {
             ],
             exit_code: 0
         };
+        $("analyse_card").data("assets_path", data.assets_path);
+        $("#open_in_new_btn").attr("href", data.results_url);
         RL.produceResults(data);
     };
 
@@ -403,8 +405,6 @@ if (!RL) {
             $("#loading_modal").modal("open");
             $("#delete_results").hide();
             $("#share_the_link_btn").hide();
-            $("analyse_card").data("assets_path", data.assets_path);
-            $("#open_in_new_btn").attr("href", data.results_url);
             RL.showExemplarResults();
             $("#analysis_results").imagesLoaded().then(function() {
                 $("#loading_modal").modal("close");
