@@ -73,9 +73,23 @@ module Relayer
         File.join uri
       end
 
+      def host_with_port
+        forwarded = request.env['HTTP_X_FORWARDED_HOST']
+        if forwarded
+          forwarded.split(/,\s?/).last
+        else
+          request.env['HTTP_HOST'] || "#{request.env['SERVER_NAME'] ||
+            request.env['SERVER_ADDR']}:#{request.env['SERVER_PORT']}"
+        end
+      end
+
+      # Remove port number.
+      def host
+        host_with_port.to_s.sub(/:\d+\z/, '')
+      end
+
       def base_url
-        proxy = Relayer.ssl? ? 'https' : 'http'
-        @base_url ||= "#{proxy}://#{request.env['HTTP_HOST']}"
+        @base_url ||= "#{Relayer.ssl? ? 'https' : 'http'}://#{host}"
       end
     end
 
