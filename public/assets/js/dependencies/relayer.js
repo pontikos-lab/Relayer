@@ -120,7 +120,7 @@ if (!RL) {
                     location.reload();
                 },
                 error: function(e, status) {
-                    GD.ajaxError(e, status);
+                    RL.ajaxError(e, status);
                 }
             });
         });
@@ -140,7 +140,7 @@ if (!RL) {
                 type: "POST",
                 url: share_link,
                 error: function(e, status) {
-                    GD.ajaxError(e, status);
+                    RL.ajaxError(e, status);
                 }
             });
         });
@@ -380,7 +380,7 @@ if (!RL) {
 
     RL.showExemplarResults = function() {
         $("#analysis_results").show();
-        data = {
+        var data = {
             uuid: "2017-12-12_03-04-48_016-016632245",
             assets_path: "https://relayer.online/relayer/users/relayer/2017-12-12_03-04-48_016-016632245",
             share_url: "https://relayer.online/sh/cmVsYXllcg==/2017-12-12_03-04-48_016-016632245",
@@ -394,9 +394,9 @@ if (!RL) {
             ],
             exit_code: 0
         };
-        $("analyse_card").data("assets_path", data.assets_path);
-        $("#open_in_new_btn").attr("href", data.results_url);
         RL.produceResults(data);
+        $("#delete_results").hide();
+        $("#share_the_link_btn").hide();
         $("html, body").animate({
             scrollTop: $("#analysis_results").offset().top
         });
@@ -408,8 +408,6 @@ if (!RL) {
             $("#beta_modal").modal("close");
             $("#modal_header_text").text("Producing Exemplar Results");
             $("#loading_modal").modal("open");
-            $("#delete_results").hide();
-            $("#share_the_link_btn").hide();
             RL.showExemplarResults();
             $("#analysis_results").imagesLoaded().then(function() {
                 $("#loading_modal").modal("close");
