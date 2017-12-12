@@ -31,7 +31,7 @@ module Relayer
       def run(params, user, url)
         init(params, user)
         run_matlab
-        if @matlab_exit_code != 0
+        if @matlab_exit_code.zero?
           Thread.new { compress_output_dir(@run_dir, @run_out_dir) }
         end
         write_results_to_file(url)
