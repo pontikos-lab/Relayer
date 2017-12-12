@@ -109,40 +109,46 @@ module Relayer
     end
 
     get '/my_results' do
-      # redirect to('auth/google_oauth2') if session[:user].nil?
-      # slim :work_in_progress, layout: :app_layout
-      e = session[:user].nil? ? 'relayer' : session[:user].info['email']
-      @my_results = History.run(e)
+      # @my_results = History.run(session[:user].info['email'])
+      @my_results = History.run('relayer')
       slim :my_results, layout: :app_layout
     end
 
-    # # Individual Result Pages
-    # get '/result/:encoded_email/:time' do
-    #   email = Base64.decode64(params[:encoded_email])
-    #   if session[:user].nil? && email != 'relayer'
-    #     redirect to('auth/google_oauth2')
-    #   end
-    #   json_file = File.join(Relayer.public_dir, 'relayer/users/', email,
-    #                         params['time'], 'params.json')
-    #   @results  = JSON.parse(IO.read(json_file))
-    #   slim :single_results, layout: :app_layout
-    # end
+    # Individual Result Pages
+    get '/result/:encoded_email/:time' do
+      email = Base64.decode64(params[:encoded_email])
+      if session[:user].nil? && email != 'relayer'
+        redirect to('auth/google_oauth2')
+      end
+      json_file = File.join(Relayer.public_dir, 'relayer/users/', email,
+                            params['time'], 'params.json')
+      if File.exist? json_file
+        @results = JSON.parse(IO.read(json_file))
+      else
+        @respond = {}
+      end
+      slim :single_result, layout: :app_layout
+    end
 
-    # # Shared Result Pages (Can be viewed without logging in)
-    # get '/sh/:encoded_email/:time' do
-    #   email     = Base64.decode64(params[:encoded_email])
-    #   json_file = File.join(Relayer.public_dir, 'relayer/share/', email,
-    #                         params['time'], 'params.json')
-    #   @results  = JSON.parse(IO.read(json_file))
-    #   slim :single_results, layout: :app_layout
-    # end
+    # Shared Result Pages (Can be viewed without logging in)
+    get '/sh/:encoded_email/:time' do
+      email     = Base64.decode64(params[:encoded_email])
+      json_file = File.join(Relayer.public_dir, 'relayer/share/', email,
+                            params['time'], 'params.json')
+      if File.exist? json_file
+        @results  = JSON.parse(IO.read(json_file))
+      else
+        @respond = {}
+      end
+      slim :single_result, layout: :app_layout
+    end
 
     # get '/exemplar_results' do
     #   exemplar_results = Relayer.exemplar_results
     #   json_file = File.join(Relayer.public_dir, 'relayer/users/',
     #                         exemplar_results, 'params.json')
     #   @results  = JSON.parse(IO.read(json_file))
-    #   slim :single_results, layout: :app_layout
+    #   slim :single_result, layout: :app_layout
     # end
 
     get '/faq' do
@@ -179,32 +185,35 @@ module Relayer
     end
 
     # Create a share link for a result page
-    # post '/sh/:encoded_email/:time' do
-    #   email    = Base64.decode64(params[:encoded_email])
-    #   analysis = File.join(Relayer.users_dir, email, params['time'])
-    #   share    = File.join(Relayer.public_dir, 'relayer/share', email)
-    #   FileUtils.mkdir_p(share) unless File.exist? share
-    #   FileUtils.cp_r(analysis, share)
-    #   share_file = File.join(analysis, '.share')
-    #   FileUtils.touch(share_file) unless File.exist? share_file
-    # end
+    post '/sh/:encoded_email/:time' do
+      email = Base64.decode64(params[:encoded_email])
+      analysis = File.join(Relayer.users_dir, email, params['time'])
+      share    = File.join(Relayer.public_dir, 'relayer/share', email)
+      FileUtils.mkdir_p(share) unless File.exist? share
+      FileUtils.cp_r(analysis, share)
+      share_file = File.join(analysis, '.share')
+      FileUtils.touch(share_file) unless File.exist? share_file
+    end
 
     # Remove a share link of a result page
-    # post '/rm/:encoded_email/:time' do
-    #   email = Base64.decode64(params[:encoded_email])
-    #   share = File.join(Relayer.public_dir, 'relayer/share', email,
-    #                     params['time'])
-    #   FileUtils.rm_r(share) if File.exist? share
-    #   share_file = File.join(Relayer.users_dir, email, params['time'], '.share')
-    #   FileUtils.rm(share_file) if File.exist? share_file
-    # end
+    post '/rm/:encoded_email/:time' do
+      email = Base64.decode64(params[:encoded_email])
+      share = File.join(Relayer.public_dir, 'relayer/share', email,
+                        params['time'])
+      FileUtils.rm_r(share) if File.exist? share
+      share_file = File.join(Relayer.users_dir, email, params['time'],
+                             '.share')
+      FileUtils.rm(share_file) if File.exist? share_file
+    end
 
-    # # Delete a Results Page
-    # post '/delete_result' do
-    #   email = session[:user].nil? ? 'relayer' : session[:user].info['email']
-    #   @results_url = File.join(Relayer.users_dir, email, params['result_time'])
-    #   FileUtils.rm_r @results_url if Dir.exist? @results_url
-    # end
+    # Delete a Results Page
+    post '/delete_result' do
+      email = session[:user].nil? ? 'relayer' : session[:user].info['email']
+      @results_url = File.join(Relayer.users_dir, email, params['uuid'])
+      if Dir.exist? @results_url
+        FileUtils.mv(@results_url, File.join(Relayer.users_dir, 'archive'))
+      end
+    end
 
     get '/auth/:provider/callback' do
       content_type 'text/plain'
