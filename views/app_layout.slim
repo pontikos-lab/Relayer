@@ -151,10 +151,11 @@ html lang="en"
     - if settings.production?
       script src="#{uri('assets/js/app-' + Relayer::VERSION + '.min.js')}"
     - else
-      script src="#{uri('assets/js/jquery.fine-uploader.min.js')}"
-      script src="#{uri('assets/js/underscore.js')}"
-      script src="#{uri('assets/js/nouislider.js')}"
-      script src="#{uri('assets/js/app.js')}"
+      script src="#{uri('assets/js/dependencies/jquery.fine-uploader.min.js')}"
+      script src="#{uri('assets/js/dependencies/jquery.file-download.js')}"
+      script src="#{uri('assets/js/dependencies/underscore.js')}"
+      script src="#{uri('assets/js/dependencies/nouislider.js')}"
+      script src="#{uri('assets/js/dependencies/relayer.js')}"
     javascript:
       RL.CLIENT_ID = "#{ENV['GOOGLE_KEY']}"
       RL.USING_SLL = "#{Relayer.ssl?}"
