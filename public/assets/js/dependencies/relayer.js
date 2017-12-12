@@ -396,6 +396,10 @@ if (!RL) {
         $("analyse_card").data("assets_path", data.assets_path);
         $("#open_in_new_btn").attr("href", data.results_url);
         RL.produceResults(data);
+        $("html, body").animate({
+            scrollTop: $("#analysis_results").offset().top
+        });
+
     };
 
     RL.initExemplarResultsBtn = function() {
