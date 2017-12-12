@@ -36,7 +36,10 @@ module Relayer
         end
         write_results_to_file(url)
         { exit_code: @matlab_exit_code, scale: @colour_scale,
-          assets_path: "/relayer/users/#{@email}/#{@uniq_time}" }
+          assets_path: "#{url}/relayer/users/#{@email}/#{@uniq_time}",
+          results_url: "#{url}/result/#{encode_email}/#{@uniq_time}",
+          share_url: "#{url}/sh/#{encode_email}/#{@uniq_time}",
+          uuid: @uniq_time }
       end
 
       private
