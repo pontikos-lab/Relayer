@@ -398,6 +398,7 @@ if (!RL) {
     RL.initExemplarResultsBtn = function() {
         $(".exemplar_output").on("click", function(e) {
             $("#beta_modal").modal("close");
+            $("#modal_header_text").text("Producing Exemplar Results");
             $("#loading_modal").modal("open");
             $("#delete_results").hide();
             $("#share_the_link_btn").hide();
