@@ -55,11 +55,23 @@ if (!RL) {
             } else {
                 console.log('Filenames Not Validated');
             }
+
             var formData = $("#oct_segmentation_analysis").serializeArray();
             formData.push({
                 name: "files",
                 value: JSON.stringify(RL.fineUploader.getUploads())
             });
+            // Manually check if the select is empty
+            if ($('select[name="machine_type"]').val()) {
+                $('.validation_text').text('Please select the a Machine Type above.');
+                return false;
+            }
+
+            if (RL.fineUploader.getInProgress() !== 0) {
+                $('.validation_text').text('Please wait until all the files have completely uploaded.');
+                return false;
+            }
+
             $.ajax({
                 url: '/oct_segmentation',
                 type: 'post',
@@ -386,11 +398,11 @@ if (!RL) {
             share_url: "https://relayer.online/sh/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
             results_url: "https://relayer.online/result/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
             scale: [
-              ["0","rgb(140,0,186)"],
-              ["0.25","rgb(39,0,236)"],
-              ["0.5","rgb(0,104,151)"],
-              ["0.75","rgb(18,255,0)"],
-              ["1","rgb(170,255,0)"]
+                ["0", "rgb(140,0,186)"],
+                ["0.25", "rgb(39,0,236)"],
+                ["0.5", "rgb(0,104,151)"],
+                ["0.75", "rgb(18,255,0)"],
+                ["1", "rgb(170,255,0)"]
             ],
             exit_code: 0
         };
