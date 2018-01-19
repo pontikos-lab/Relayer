@@ -95,7 +95,7 @@ module Relayer
 
     # For any request that hits the app, log incoming params at debug level.
     before do
-      logger.debug params
+      logger.debug "#{@env["REQUEST_METHOD"]} #{@env["REQUEST_URI"]} => #{params}"
     end
 
     # Home page (marketing page)
@@ -117,16 +117,13 @@ module Relayer
     # Individual Result Pages
     get '/result/:encoded_email/:time' do
       email = Base64.decode64(params[:encoded_email])
-      if session[:user].nil? && email != 'relayer'
+      if (session[:user].nil? && email != 'relayer') ||
+         email != session[:user].info['email']
         redirect to('auth/google_oauth2')
       end
       json_file = File.join(Relayer.public_dir, 'relayer/users/', email,
                             params['time'], 'params.json')
-      if File.exist? json_file
-        @results = JSON.parse(IO.read(json_file))
-      else
-        @respond = {}
-      end
+      @results = File.exist? json_file ? JSON.parse(IO.read(json_file)) : {}
       slim :single_result, layout: :app_layout
     end
 
@@ -135,11 +132,7 @@ module Relayer
       email     = Base64.decode64(params[:encoded_email])
       json_file = File.join(Relayer.public_dir, 'relayer/share/', email,
                             params['time'], 'params.json')
-      if File.exist? json_file
-        @results = JSON.parse(IO.read(json_file))
-      else
-        @respond = {}
-      end
+      @results = File.exist? json_file ? JSON.parse(IO.read(json_file)) : {}
       slim :single_result, layout: :app_layout
     end
 

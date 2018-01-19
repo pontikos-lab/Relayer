@@ -31,10 +31,10 @@ module Relayer
       def run(params, user, url)
         init(params, user)
         run_matlab
+        write_results_to_file(url)
         if @matlab_exit_code.zero?
           Thread.new { compress_output_dir(@run_dir, @run_out_dir) }
         end
-        write_results_to_file(url)
         { exit_code: @matlab_exit_code, scale: @colour_scale,
           assets_path: "#{url}/relayer/users/#{@email}/#{@uniq_time}",
           results_url: "#{url}/result/#{encode_email}/#{@uniq_time}",
@@ -168,8 +168,9 @@ module Relayer
       end
 
       def write_results_to_file(url)
-        results = generate_results_hash(url)
         params_file = File.join(@run_dir, 'params.json')
+        logger.debug("writing params file to #{params_file}")
+        results = generate_results_hash(url)
         File.open(params_file, 'w') { |io| io.puts results.to_json }
       end
 

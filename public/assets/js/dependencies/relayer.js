@@ -381,10 +381,10 @@ if (!RL) {
     RL.showExemplarResults = function() {
         $("#analysis_results").show();
         var data = {
-            uuid: "2017-12-12_03-04-48_016-016632245",
-            assets_path: "https://relayer.online/relayer/users/relayer/2017-12-12_03-04-48_016-016632245",
-            share_url: "https://relayer.online/sh/cmVsYXllcg==/2017-12-12_03-04-48_016-016632245",
-            results_url: "https://relayer.online/result/cmVsYXllcg==/2017-12-12_03-04-48_016-016632245",
+            uuid: "2018-01-19_01-00-17_256-256824451",
+            assets_path: "https://relayer.online/relayer/users/relayer/2018-01-19_01-00-17_256-256824451",
+            share_url: "https://relayer.online/sh/cmVsYXllcg==/2018-01-19_01-00-17_256-256824451",
+            results_url: "https://relayer.online/result/cmVsYXllcg==/2018-01-19_01-00-17_256-256824451",
             scale: [
                 ["0", "rgb(140,0,186)"],
                 ["0.25", "rgb(39,0,236)"],
@@ -426,7 +426,7 @@ if (!RL) {
             return $.Deferred().resolve().promise();
         }
 
-        // for each image, add a deferred object to the array which resolves 
+        // for each image, add a deferred object to the array which resolves
         // when the image is loaded (or if loading fails)
         var dfds = [];
         $imgs.each(function() {
@@ -442,7 +442,7 @@ if (!RL) {
             };
             img.src = this.src;
         });
-        // return a master promise object which will resolve when all 
+        // return a master promise object which will resolve when all
         // the deferred objects have resolved
         // i.e. - when all the images are loaded
         return $.when.apply($, dfds);
