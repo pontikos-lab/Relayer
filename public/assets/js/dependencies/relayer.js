@@ -381,16 +381,16 @@ if (!RL) {
     RL.showExemplarResults = function() {
         $("#analysis_results").show();
         var data = {
-            uuid: "2018-01-19_01-00-17_256-256824451",
-            assets_path: "https://relayer.online/relayer/users/relayer/2018-01-19_01-00-17_256-256824451",
-            share_url: "https://relayer.online/sh/cmVsYXllcg==/2018-01-19_01-00-17_256-256824451",
-            results_url: "https://relayer.online/result/cmVsYXllcg==/2018-01-19_01-00-17_256-256824451",
+            uuid: "2018-01-19_01-14-17_700-700588804",
+            assets_path: "https://relayer.online/relayer/users/relayer/2018-01-19_01-14-17_700-700588804",
+            share_url: "https://relayer.online/sh/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
+            results_url: "https://relayer.online/result/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
             scale: [
-                ["0", "rgb(140,0,186)"],
-                ["0.25", "rgb(39,0,236)"],
-                ["0.5", "rgb(0,104,151)"],
-                ["0.75", "rgb(18,255,0)"],
-                ["1", "rgb(170,255,0)"]
+              ["0","rgb(140,0,186)"],
+              ["0.25","rgb(39,0,236)"],
+              ["0.5","rgb(0,104,151)"],
+              ["0.75","rgb(18,255,0)"],
+              ["1","rgb(170,255,0)"]
             ],
             exit_code: 0
         };
