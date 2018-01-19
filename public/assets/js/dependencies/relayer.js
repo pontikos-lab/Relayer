@@ -47,6 +47,24 @@ if (!RL) {
 
     RL.initSubmit = function() {
         $('#analysis_btn').on('click', function() {
+            // Manually check if the select is empty
+            if ($.isEmptyObject($('select[name="machine_type"]').val())) {
+                $('.validation_text').text('Please select the a Machine Type above.');
+                return false;
+            }
+
+            // check if at least one file has been uploaded
+            if ($.isEmptyObject(RL.fineUploader.getUploads())) {
+                $('.validation_text').text('Please upload a file first.');
+                return false;
+            }
+
+            // Check if some files are still running
+            if (RL.fineUploader.getInProgress() !== 0) {
+                $('.validation_text').text('Please wait until all the files have completely uploaded.');
+                return false;
+            }
+
             $('#loading_modal').modal('open');
             $('#modal_header_text').text('Running Analysis');
             $('#modal_text').text('This should take a few minutes. Please leave this page open');
@@ -61,16 +79,6 @@ if (!RL) {
                 name: "files",
                 value: JSON.stringify(RL.fineUploader.getUploads())
             });
-            // Manually check if the select is empty
-            if ($('select[name="machine_type"]').val()) {
-                $('.validation_text').text('Please select the a Machine Type above.');
-                return false;
-            }
-
-            if (RL.fineUploader.getInProgress() !== 0) {
-                $('.validation_text').text('Please wait until all the files have completely uploaded.');
-                return false;
-            }
 
             $.ajax({
                 url: '/oct_segmentation',
