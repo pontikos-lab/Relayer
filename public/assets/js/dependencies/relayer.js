@@ -28,7 +28,7 @@ if (!RL) {
                 }
             },
             validation: {
-                allowedExtensions: ['jpeg', 'jpg', 'tif', 'h5'],
+                allowedExtensions: ['jpeg', 'jpg', 'tif', 'tiff', 'h5'],
                 itemLimit: 500,
                 sizeLimit: 78650000 // 75MB
             },
@@ -64,6 +64,8 @@ if (!RL) {
                 $('.validation_text').text('Please wait until all the files have completely uploaded.');
                 return false;
             }
+
+            $('.validation_text').text('');
 
             $('#loading_modal').modal('open');
             $('#modal_header_text').text('Running Analysis');
