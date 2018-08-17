@@ -403,10 +403,10 @@ if (!RL) {
     RL.showExemplarResults = function() {
         $("#analysis_results").show();
         var data = {
-            uuid: "2018-01-19_01-14-17_700-700588804",
-            assets_path: "https://relayer.online/relayer/users/relayer/2018-01-19_01-14-17_700-700588804",
-            share_url: "https://relayer.online/sh/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
-            results_url: "https://relayer.online/result/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
+            uuid: "exemplar_output",
+            assets_path: "https://relayer.online/relayer/users/relayer/exemplar_output",
+            share_url: "https://relayer.online/sh/cmVsYXllcg==/exemplar_output",
+            results_url: "https://relayer.online/result/cmVsYXllcg==/exemplar_output",
             scale: [
                 ["0", "rgb(140,0,186)"],
                 ["0.25", "rgb(39,0,236)"],
