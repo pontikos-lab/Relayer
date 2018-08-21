@@ -116,14 +116,20 @@ module Relayer
 
     # Individual Result Pages
     get '/result/:encoded_email/:time' do
+      puts params
       email = Base64.decode64(params[:encoded_email])
       if (session[:user].nil? && email != 'relayer') ||
          email != session[:user].info['email']
         redirect to('auth/google_oauth2')
       end
       json_file = File.join(Relayer.public_dir, 'relayer/users/', email,
-                            params['time'], 'params.json')
-      @results = File.exist? json_file ? JSON.parse(IO.read(json_file)) : {}
+                            params[:time], 'params.json')
+      puts json_file
+      @results = if File.exist? json_file
+                   JSON.parse(IO.read(json_file), symbolize_names: true)
+                 else
+                   {}
+                 end
       slim :single_result, layout: :app_layout
     end
 
@@ -131,8 +137,12 @@ module Relayer
     get '/sh/:encoded_email/:time' do
       email     = Base64.decode64(params[:encoded_email])
       json_file = File.join(Relayer.public_dir, 'relayer/share/', email,
-                            params['time'], 'params.json')
-      @results = File.exist? json_file ? JSON.parse(IO.read(json_file)) : {}
+                            params[:time], 'params.json')
+      @results = if File.exist? json_file
+                   JSON.parse(IO.read(json_file), symbolize_names: true)
+                 else
+                   {}
+                 end
       slim :single_result, layout: :app_layout
     end
 
@@ -180,7 +190,7 @@ module Relayer
     # Create a share link for a result page
     post '/sh/:encoded_email/:time' do
       email = Base64.decode64(params[:encoded_email])
-      analysis = File.join(Relayer.users_dir, email, params['time'])
+      analysis = File.join(Relayer.users_dir, email, params[:time])
       share    = File.join(Relayer.public_dir, 'relayer/share', email)
       FileUtils.mkdir_p(share) unless File.exist? share
       FileUtils.cp_r(analysis, share)
@@ -192,9 +202,9 @@ module Relayer
     post '/rm/:encoded_email/:time' do
       email = Base64.decode64(params[:encoded_email])
       share = File.join(Relayer.public_dir, 'relayer/share', email,
-                        params['time'])
+                        params[:time])
       FileUtils.rm_rf(share) if File.exist? share
-      share_file = File.join(Relayer.users_dir, email, params['time'], '.share')
+      share_file = File.join(Relayer.users_dir, email, params[:time], '.share')
       FileUtils.rm(share_file) if File.exist? share_file
     end
 

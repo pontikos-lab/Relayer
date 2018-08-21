@@ -26,14 +26,14 @@ module Relayer
           next unless File.exist? json_file
           data << generate_data_hash(json_file, user_dir, time)
         end
-        data.sort_by { |d| d['run_time'] }.reverse
+        data.sort_by { |d| d[:run_time] }.reverse
       end
 
       def generate_data_hash(json_file, user_dir, time)
-        data = JSON.parse(IO.read(json_file.to_s))
-        data['run_time'] = Time.strptime(data['uniq_result_id'],
+        data = JSON.parse(IO.read(json_file.to_s), symbolize_names: true)
+        data[:run_time] = Time.strptime(data[:uniq_result_id],
                                          '%Y-%m-%d_%H-%M-%S_%L-%N')
-        data['share'] = true if File.exist?(user_dir + time + '.share')
+        data[:share] = true if File.exist?(user_dir + time + '.share')
         data
       end
     end

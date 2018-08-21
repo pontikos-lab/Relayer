@@ -10,20 +10,20 @@
       .row
         - @my_results.each do |result|
           .col.s12.m6
-            .card.hoverable data-user="#{result['user']}" data-result="#{result['uniq_result_id']}" data-share-link="#{result['share_url']}" data-results-link="#{result['results_url']}"
-              .card-content.cyan.darken-4 style="padding:1rem; text-align:left;cursor:pointer;" onclick="location.href='#{result['results_url']}'"
+            .card.hoverable data-user="#{result[:user]}" data-result="#{result[:uniq_result_id]}" data-share-link="#{result[:share_url]}" data-results-link="#{result[:results_url]}"
+              .card-content.cyan.darken-4 style="padding:1rem; text-align:left;cursor:pointer;" onclick="location.href='#{result[:results_url]}'"
                 span.card-title.white-text
-                  | #{result['run_time']}
+                  | #{result[:run_time]}
                 br
                 span.grey-text.text-lighten-3 style="padding-left:10px;"
-                  | Run Time: #{result['run_time'].strftime("%H:%M %d/%m/%Y")}
+                  | Run Time: #{result[:run_time].strftime("%H:%M %d/%m/%Y")}
               .card-action style="padding:0;"
                 .actions.right style=" display: -webkit-flex; margin-left: auto; padding: 10px 0;"
-                  a#download-all-results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 data-download="#{result['assets_path']}/relayer_results.zip"
+                  a#download-all-results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 data-download="#{result[:assets_path]}/relayer_results.zip"
                     i.material-icons  file_download
                   a#delete_results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
                     i.material-icons  delete
-                  - if result['share']
+                  - if result[:share]
                     a#share_the_link_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
                       i.material-icons  link
                     a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 style="display:none;"
@@ -33,6 +33,6 @@
                       i.material-icons  link
                     a#share_btn.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4
                       i.material-icons  share
-                  a.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 href="#{result['results_url']}"
+                  a.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 href="#{result[:results_url]}"
                     i.material-icons  open_in_new
               .clearfix
