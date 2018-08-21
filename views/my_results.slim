@@ -10,7 +10,7 @@
       .row
         - @my_results.each do |result|
           .col.s12.m6
-            .card.hoverable data-user="#{result[:user]}" data-result="#{result[:uniq_result_id]}" data-share-link="#{result[:share_url]}" data-results-link="#{result[:results_url]}"
+            .card.hoverable data-user="#{result[:user]}" data-result_uuid="#{result[:uniq_result_id]}" data-share-link="#{result[:share_url]}" data-results-link="#{result[:results_url]}"
               .card-content.cyan.darken-4 style="padding:1rem; text-align:left;cursor:pointer;" onclick="location.href='#{result[:results_url]}'"
                 span.card-title.white-text
                   | #{result[:run_time]}

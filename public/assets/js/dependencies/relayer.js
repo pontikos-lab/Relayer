@@ -125,19 +125,19 @@ if (!RL) {
     RL.delete_result = function() {
         $("#analysis_results").on("click", "#delete_results", function() {
             $("#delete_modal").modal("open");
-            var resultId = $(this).closest(".card").data("uuid");
-            $("#delete_modal").attr("data-uuid", resultId);
+            var resultId = $(this).closest(".card").data("result_uuid");
+            $("#delete_modal").attr("data-result_uuid", resultId);
         });
 
         $(".delete-results").click(function() {
             $("#modal_header_text").text("Deleting Result");
             $("#loading_modal").modal({ dismissible: false });
             $("#loading_modal").modal("open");
-            var uuid = $("#delete_modal").data("uuid");
+            var result_uuid = $("#delete_modal").data("result_uuid");
             $.ajax({
                 type: "POST",
                 url: "/delete_result",
-                data: { uuid: uuid },
+                data: { uuid: result_uuid },
                 success: function() {
                     location.reload();
                 },

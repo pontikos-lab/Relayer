@@ -211,7 +211,7 @@ module Relayer
     # Delete a Results Page
     post '/delete_result' do
       email = session[:user].nil? ? 'relayer' : session[:user].info['email']
-      @results_url = File.join(Relayer.users_dir, email, params['uuid'])
+      @results_url = File.join(Relayer.users_dir, email, params[:uuid])
       if Dir.exist? @results_url
         FileUtils.mv(@results_url, File.join(Relayer.users_dir, 'archive'))
       end
