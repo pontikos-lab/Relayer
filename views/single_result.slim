@@ -8,7 +8,7 @@
             span.card-title.cyan-text.text-darken-4 Oops. We can't find this analysis.
             p  The result files for this analysis no longer exist. This is likely to be due to the analysis being deleted by the owner. Alternatively, please ensure that you have enter the url correctly.
       -else
-        .card.analyse_card data-assets_path="#{@results[:assets_path]}" data-uuid="#{@results[:uniq_result_id]}" data-share-link="#{@results[:share_url]}" data-scale="#{@results[:scale]}"
+        .card.analyse_card data-assets_path="#{@results[:assets_path]}" data-result_uuid="#{@results[:uniq_result_id]}" data-share-link="#{@results[:share_url]}" data-scale="#{@results[:scale]}"
           .card-content style="padding:2rem 3.5rem;"
             .actions.right
               a#download-all-results.waves-effect.btn-flat.nopadding.cyan-text.text-darken-4 data-download="#{@results['assets_path']}/relayer_results.zip"
