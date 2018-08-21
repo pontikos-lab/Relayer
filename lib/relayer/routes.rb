@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'base64'
 require 'English'
 require 'json'
@@ -62,14 +64,14 @@ module Relayer
         uri = [host = '']
         if absolute
           host << (Relayer.ssl? ? 'https://' : 'http://')
-          if request.forwarded? || request.port != (request.secure? ? 443 : 80)
-            host << request.host_with_port
-          else
-            host << request.host
-          end
+          host << if request.forwarded? || request.port != (request.secure? ? 443 : 80)
+                    request.host_with_port
+                  else
+                    request.host
+                  end
         end
         uri << request.script_name.to_s if add_script_name
-        uri << (addr ? addr : request.path_info).to_s
+        uri << (addr || request.path_info).to_s
         File.join uri
       end
 
@@ -95,7 +97,7 @@ module Relayer
 
     # For any request that hits the app, log incoming params at debug level.
     before do
-      logger.debug "#{@env["REQUEST_METHOD"]} #{@env["REQUEST_URI"]} => #{params}"
+      logger.debug "#{@env['REQUEST_METHOD']} #{@env['REQUEST_URI']} => #{params}"
     end
 
     # Home page (marketing page)

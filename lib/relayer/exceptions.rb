@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file defines all possible exceptions that can be thrown by
 # Relayer on startup.
 #
@@ -22,10 +24,10 @@ module Relayer
     attr_reader :ent, :err
 
     def to_s
-      <<MSG
-Error reading config file: #{ent}.
-#{err}
-MSG
+      <<~MSG
+        Error reading config file: #{ent}.
+        #{err}
+      MSG
     end
   end
 

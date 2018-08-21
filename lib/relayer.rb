@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'json'
 require 'yaml'
@@ -193,7 +195,7 @@ module Relayer
       return if using_ssh? || verbose?
       if RUBY_PLATFORM =~ /linux/ && xdg?
         system "xdg-open #{server_url}"
-      elsif RUBY_PLATFORM =~ /darwin/
+      elsif RUBY_PLATFORM.match?(/darwin/)
         system "open #{server_url}"
       end
     end
