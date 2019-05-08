@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module Relayer
@@ -11,7 +13,7 @@ module Relayer
 
     # We change Logging format so that it is consistent with Sinatra's
     class Formatter < Formatter
-      FORMAT = "[%s] %s  %s\n".freeze
+      FORMAT = "[%s] %s  %s\n"
 
       def initialize
         self.datetime_format = '%Y-%m-%d %H:%M:%S'

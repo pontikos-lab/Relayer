@@ -28,7 +28,7 @@ if (!RL) {
                 }
             },
             validation: {
-                allowedExtensions: ['jpeg', 'jpg', 'tif', 'h5'],
+                allowedExtensions: ['jpeg', 'jpg', 'tif', 'tiff', 'h5'],
                 itemLimit: 500,
                 sizeLimit: 78650000 // 75MB
             },
@@ -47,6 +47,26 @@ if (!RL) {
 
     RL.initSubmit = function() {
         $('#analysis_btn').on('click', function() {
+            // Manually check if the select is empty
+            if ($.isEmptyObject($('select[name="machine_type"]').val())) {
+                $('.validation_text').text('Please select the a Machine Type above.');
+                return false;
+            }
+
+            // check if at least one file has been uploaded
+            if ($.isEmptyObject(RL.fineUploader.getUploads())) {
+                $('.validation_text').text('Please upload a file first.');
+                return false;
+            }
+
+            // Check if some files are still running
+            if (RL.fineUploader.getInProgress() !== 0) {
+                $('.validation_text').text('Please wait until all the files have completely uploaded.');
+                return false;
+            }
+
+            $('.validation_text').text('');
+
             $('#loading_modal').modal('open');
             $('#modal_header_text').text('Running Analysis');
             $('#modal_text').text('This should take a few minutes. Please leave this page open');
@@ -55,11 +75,13 @@ if (!RL) {
             } else {
                 console.log('Filenames Not Validated');
             }
+
             var formData = $("#oct_segmentation_analysis").serializeArray();
             formData.push({
                 name: "files",
                 value: JSON.stringify(RL.fineUploader.getUploads())
             });
+
             $.ajax({
                 url: '/oct_segmentation',
                 type: 'post',
@@ -103,19 +125,19 @@ if (!RL) {
     RL.delete_result = function() {
         $("#analysis_results").on("click", "#delete_results", function() {
             $("#delete_modal").modal("open");
-            var resultId = $(this).closest(".card").data("uuid");
-            $("#delete_modal").attr("data-uuid", resultId);
+            var resultId = $(this).closest(".card").data("result_uuid");
+            $("#delete_modal").attr("data-result_uuid", resultId);
         });
 
         $(".delete-results").click(function() {
             $("#modal_header_text").text("Deleting Result");
             $("#loading_modal").modal({ dismissible: false });
             $("#loading_modal").modal("open");
-            var uuid = $("#delete_modal").data("uuid");
+            var result_uuid = $("#delete_modal").data("result_uuid");
             $.ajax({
                 type: "POST",
                 url: "/delete_result",
-                data: { uuid: uuid },
+                data: { uuid: result_uuid },
                 success: function() {
                     location.reload();
                 },
@@ -381,16 +403,16 @@ if (!RL) {
     RL.showExemplarResults = function() {
         $("#analysis_results").show();
         var data = {
-            uuid: "2018-01-19_01-14-17_700-700588804",
-            assets_path: "https://relayer.online/relayer/users/relayer/2018-01-19_01-14-17_700-700588804",
-            share_url: "https://relayer.online/sh/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
-            results_url: "https://relayer.online/result/cmVsYXllcg==/2018-01-19_01-14-17_700-700588804",
+            uuid: "exemplar_output",
+            assets_path: "https://relayer.online/relayer/users/relayer/exemplar_output",
+            share_url: "https://relayer.online/sh/cmVsYXllcg==/exemplar_output",
+            results_url: "https://relayer.online/result/cmVsYXllcg==/exemplar_output",
             scale: [
-              ["0","rgb(140,0,186)"],
-              ["0.25","rgb(39,0,236)"],
-              ["0.5","rgb(0,104,151)"],
-              ["0.75","rgb(18,255,0)"],
-              ["1","rgb(170,255,0)"]
+                ["0", "rgb(140,0,186)"],
+                ["0.25", "rgb(39,0,236)"],
+                ["0.5", "rgb(0,104,151)"],
+                ["0.75", "rgb(18,255,0)"],
+                ["1", "rgb(170,255,0)"]
             ],
             exit_code: 0
         };

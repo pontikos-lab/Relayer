@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 
 # Relayer Namespace
@@ -60,7 +62,7 @@ module Relayer
 
       logger.debug "Reading configuration file: #{config_file}."
       symbolise YAML.load_file(config_file)
-    rescue => error
+    rescue StandardError => error
       raise CONFIG_FILE_ERROR.new(config_file, error)
     end
 
